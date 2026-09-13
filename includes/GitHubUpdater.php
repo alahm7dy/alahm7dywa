@@ -19,7 +19,7 @@ class MpwaGitHubUpdater {
         $this->file          = $file;
         $this->plugin_slug   = plugin_basename( $file );
         $this->version       = $version;
-        $this->github_repo   = get_option( 'mpedia_wagatewaygithub_repo', 'alahm7dy/mpwa-woocommerce' );
+        $this->github_repo   = get_option( 'mpedia_wagatewaygithub_repo', 'alahm7dy/alahm7dywa' );
         $this->github_token  = get_option( 'mpedia_wagatewaygithub_token', '' );
         $this->transient_key = 'mpwa_gh_update_' . md5( $this->github_repo );
 
