@@ -550,4 +550,16 @@
         });
     });
 
+    /* ── Chat Widget Style Card Selector ────────────────── */
+    $(document).on('change', 'input[name$="chat_widget_style"]', function(){
+        $('input[name$="chat_widget_style"]').each(function(){
+            var $card = $(this).closest('label');
+            if ($(this).is(':checked')) {
+                $card.css({ border: '2px solid #25D366', background: '#f0fdf4' });
+            } else {
+                $card.css({ border: '2px solid #e2e8f0', background: '#ffffff' });
+            }
+        });
+    });
+
 })(jQuery);

@@ -320,6 +320,47 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
 
               <hr style="border:none; border-top:1px solid var(--c-border); margin:20px 0;">
 
+              <!-- Widget Template Selector -->
+              <div class="mpwa-field" style="margin-bottom:20px;">
+                <label style="font-size:14.5px; font-weight:800; display:block; margin-bottom:8px;">🎨 قالب وتصميم الويدجت (Widget Template)</label>
+                <?php $cur_chat_style = get_option( $p . 'chat_widget_style', 'glass' ); ?>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:14px; margin-top:8px;">
+                  
+                  <label style="display:flex; flex-direction:column; padding:14px; border:2px solid <?php echo ($cur_chat_style === 'glass') ? '#25D366' : '#e2e8f0'; ?>; border-radius:12px; background:<?php echo ($cur_chat_style === 'glass') ? '#f0fdf4' : '#ffffff'; ?>; cursor:pointer; transition:all 0.2s;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                      <span style="font-weight:700; font-size:14px; color:#0f172a;">✨ زجاجي عصري (Glass)</span>
+                      <input type="radio" name="<?php echo esc_attr( $p ); ?>chat_widget_style" value="glass" <?php checked( $cur_chat_style, 'glass' ); ?>>
+                    </div>
+                    <span style="font-size:12px; color:#64748b; line-height:1.5;">تصميم Glassmorphism مع توهج ناعم وخلفية شفافة ضبابية فائقة العصرية.</span>
+                  </label>
+
+                  <label style="display:flex; flex-direction:column; padding:14px; border:2px solid <?php echo ($cur_chat_style === 'agents') ? '#25D366' : '#e2e8f0'; ?>; border-radius:12px; background:<?php echo ($cur_chat_style === 'agents') ? '#f0fdf4' : '#ffffff'; ?>; cursor:pointer; transition:all 0.2s;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                      <span style="font-weight:700; font-size:14px; color:#0f172a;">👥 أقسام متعددة (Agents)</span>
+                      <input type="radio" name="<?php echo esc_attr( $p ); ?>chat_widget_style" value="agents" <?php checked( $cur_chat_style, 'agents' ); ?>>
+                    </div>
+                    <span style="font-size:12px; color:#64748b; line-height:1.5;">يعرض أقسام المبيعات والدعم الفني مباشرة لتمكين العميل من اختيار الوجهة بنقرة.</span>
+                  </label>
+
+                  <label style="display:flex; flex-direction:column; padding:14px; border:2px solid <?php echo ($cur_chat_style === 'pill') ? '#25D366' : '#e2e8f0'; ?>; border-radius:12px; background:<?php echo ($cur_chat_style === 'pill') ? '#f0fdf4' : '#ffffff'; ?>; cursor:pointer; transition:all 0.2s;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                      <span style="font-weight:700; font-size:14px; color:#0f172a;">💊 كبسولة حية (Pill)</span>
+                      <input type="radio" name="<?php echo esc_attr( $p ); ?>chat_widget_style" value="pill" <?php checked( $cur_chat_style, 'pill' ); ?>>
+                    </div>
+                    <span style="font-size:12px; color:#64748b; line-height:1.5;">زر كبسولة عائم مع نص "تحدث معنا" ونقطة خضراء تفاعلية نابضة لزيادة التحويل.</span>
+                  </label>
+
+                  <label style="display:flex; flex-direction:column; padding:14px; border:2px solid <?php echo ($cur_chat_style === 'dark') ? '#25D366' : '#e2e8f0'; ?>; border-radius:12px; background:<?php echo ($cur_chat_style === 'dark') ? '#f0fdf4' : '#ffffff'; ?>; cursor:pointer; transition:all 0.2s;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                      <span style="font-weight:700; font-size:14px; color:#0f172a;">🌙 الوضع الداكن (Dark VIP)</span>
+                      <input type="radio" name="<?php echo esc_attr( $p ); ?>chat_widget_style" value="dark" <?php checked( $cur_chat_style, 'dark' ); ?>>
+                    </div>
+                    <span style="font-size:12px; color:#64748b; line-height:1.5;">ثيم ليلي راقٍ بأسلوب واتساب الأسود مع درجات الزمرد الفاخرة ونقوش شات أصلية.</span>
+                  </label>
+
+                </div>
+              </div>
+
               <div class="mpwa-grid-2">
                 <div class="mpwa-field">
                   <label>رقم واتساب المخصص للشات (مع رمز الدولة بدون +)</label>
@@ -338,6 +379,21 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
                 </div>
               </div>
 
+              <!-- Department routing phones -->
+              <div class="mpwa-grid-2" style="margin-top:16px;">
+                <div class="mpwa-field">
+                  <label>رقم قسم المبيعات والطلبات (لقالب الأقسام Agents)</label>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_sales_phone" value="<?php echo esc_attr( get_option( $p . 'chat_widget_sales_phone', '' ) ); ?>" placeholder="مثال: 966500000001" dir="ltr" style="text-align:left;">
+                  <p class="mpwa-hint">اختياري، إن تُرك فارغاً يتم التحويل للرقم الأساسي للشات.</p>
+                </div>
+
+                <div class="mpwa-field">
+                  <label>رقم الدعم الفني وخدمة العملاء (لقالب الأقسام Agents)</label>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_support_phone" value="<?php echo esc_attr( get_option( $p . 'chat_widget_support_phone', '' ) ); ?>" placeholder="مثال: 966500000002" dir="ltr" style="text-align:left;">
+                  <p class="mpwa-hint">اختياري، إن تُرك فارغاً يتم التحويل للرقم الأساسي للشات.</p>
+                </div>
+              </div>
+
               <div class="mpwa-grid-2" style="margin-top:16px;">
                 <div class="mpwa-field">
                   <label>اسم المسؤول / عنوان النافذة</label>
@@ -353,7 +409,7 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
               <div class="mpwa-field" style="margin-top:16px;">
                 <label>رسالة الترحيب التلقائية (Greeting Bubble)</label>
                 <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_greeting" value="<?php echo esc_attr( get_option( $p . 'chat_widget_greeting', 'مرحباً بك! 👋 كيف يمكننا مساعدتك اليوم؟' ) ); ?>" placeholder="نص الرسالة الترحيبية...">
-                <p class="mpwa-hint">فقاعة كلامية منبثقة تلفت انتباه الزائر بعد دخوله الموقع.</p>
+                <p class="mpwa-hint">فقاعة كلامية منبثقة تلفت انتباه الزائر بعد دخوله الموقع مع مؤشر كتابة واقعي (Typing Indicator).</p>
               </div>
 
               <div class="mpwa-grid-2" style="margin-top:16px;">
@@ -381,7 +437,7 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
                 <label>قالب الرسالة المسبقة الذكية (Pre-filled Message Template)</label>
                 <textarea name="<?php echo esc_attr( $p ); ?>chat_widget_prefilled" rows="3"><?php echo esc_textarea( get_option( $p . 'chat_widget_prefilled', 'مرحباً، لدي استفسار بخصوص {{page_title}}' ) ); ?></textarea>
                 <p class="mpwa-hint">
-                  الرسالة التي ستكون مكتوبة جاهزة في واتساب العميل عند النقر. يمكنك استخدام الوسوم الديناميكية التالية:
+                  الرسالة التي ستكون مكتوبة جاهزة في واتساب العميل عند النقر، كما تتضمن أزرار الاقتراحات السريعة التفاعلية (Chips).
                 </p>
                 <div class="mpwa-tags" style="margin-top:8px;">
                   <span class="mpwa-tag" title="عنوان الصفحة أو اسم المنتج">{{page_title}}</span>
@@ -392,16 +448,21 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
               </div>
 
               <!-- Live Preview Card -->
-              <div style="margin-top:24px; padding:18px; background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1px solid #cbd5e1; border-radius:12px;">
+              <div style="margin-top:24px; padding:20px; background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1px solid #cbd5e1; border-radius:14px;">
                 <h4 style="margin:0 0 8px 0; font-size:14px; color:var(--c-primary-dark); font-weight:800;">✨ معاينة لشكل الويدجت في المتجر</h4>
-                <p style="font-size:13px; color:#64748b; margin:0 0 14px 0;">سيظهر الويدجت في زاوية المتجر بشكل أنيق وسلس:</p>
-                <div style="display:inline-flex; align-items:center; gap:12px; background:#fff; padding:10px 16px; border-radius:30px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.04);">
-                  <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; box-shadow:0 4px 12px rgba(37,211,102,0.4);">
-                    💬
+                <p style="font-size:13px; color:#64748b; margin:0 0 16px 0;">أيقونة واتساب الأصلية العائمة وموجات النبض ومؤشر الكتابة التفاعلي:</p>
+                <div style="display:inline-flex; align-items:center; gap:12px; background:#fff; padding:10px 18px; border-radius:35px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.05);">
+                  <div style="width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 4px 14px rgba(37,211,102,0.45);">
+                    <svg viewBox="0 0 32 32" width="24" height="24" fill="#ffffff">
+                      <path d="M16.002 0C7.164 0 0 7.163 0 16c0 2.822.735 5.567 2.133 8.01L.062 31.258a1 1 0 0 0 1.257 1.257l7.248-2.071A15.932 15.932 0 0 0 16.002 32C24.839 32 32 24.837 32 16S24.839 0 16.002 0zm0 29.5a13.435 13.435 0 0 1-6.853-1.879l-.491-.291-5.114 1.461 1.461-5.114-.291-.491A13.435 13.435 0 0 1 2.5 16C2.5 8.556 8.558 2.5 16.002 2.5S29.5 8.556 29.5 16s-6.058 13.5-13.498 13.5zm7.391-10.155c-.406-.203-2.404-1.186-2.776-1.321-.372-.136-.643-.203-.914.203-.271.406-1.05 1.321-1.287 1.592-.237.271-.474.305-.88.102-2.316-1.156-3.83-2.072-5.347-4.673-.4-.688.4-.638 1.144-2.127.136-.271.068-.508-.034-.711s-.914-2.201-1.253-3.014c-.33-.792-.667-.684-.914-.697-.237-.012-.508-.014-.779-.014s-.711.102-1.084.508c-.372.406-1.422 1.389-1.422 3.387s1.456 3.929 1.659 4.2c.203.271 2.866 4.377 6.942 6.138 2.57 1.111 3.565 1.218 4.838 1.029.775-.116 2.404-.982 2.743-1.93.339-.948.339-1.761.237-1.93-.102-.17-.372-.271-.779-.474z"/>
+                    </svg>
                   </div>
                   <div>
                     <div style="font-size:13.5px; font-weight:700; color:#0f172a;">خدمة عملاء المتجر</div>
-                    <div style="font-size:11.5px; color:#16a34a;">● متواجدون للرد الآن</div>
+                    <div style="font-size:11.5px; color:#16a34a; display:flex; align-items:center; gap:5px;">
+                      <span style="width:7px; height:7px; background:#22c55e; border-radius:50%; display:inline-block;"></span>
+                      متواجدون للرد الآن
+                    </div>
                   </div>
                 </div>
               </div>

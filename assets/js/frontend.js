@@ -170,14 +170,18 @@ jQuery(document).ready(function($) {
     });
 
     /* ── Floating WhatsApp Chat Widget ───────────────────── */
-    var $widget   = $('#mpwa-chat-widget');
-    var $trigger  = $('#mpwa-chat-trigger');
-    var $tooltip  = $('#mpwa-chat-tooltip');
-    var $chatInp  = $('#mpwa-chat-user-input');
+    var $widget     = $('#mpwa-chat-widget');
+    var $trigger    = $('#mpwa-chat-trigger');
+    var $tooltip    = $('#mpwa-chat-tooltip');
+    var $chatInp    = $('#mpwa-chat-user-input');
+    var $typing     = $('#mpwa-chat-typing');
+    var $bubble     = $('#mpwa-chat-msg-bubble');
+    var $directLink = $('#mpwa-chat-direct-link');
 
     if ($widget.length) {
         var delaySec = parseInt($widget.data('delay'), 10);
         if (isNaN(delaySec)) delaySec = 3;
+        var phone = $widget.data('phone') || '';
 
         // Auto-show tooltip if not dismissed
         var tooltipDismissed = false;
@@ -193,29 +197,45 @@ jQuery(document).ready(function($) {
             }, delaySec * 1000);
         }
 
+        // Open/Close Chat Box
+        function openChatBox() {
+            $widget.addClass('mpwa-open mpwa-opened');
+            $tooltip.removeClass('mpwa-tooltip-visible');
+
+            // Play typing indicator animation for realistic feel
+            if ($typing.length && $bubble.length && !$widget.data('animated')) {
+                $widget.data('animated', true);
+                $typing.addClass('mpwa-typing-active');
+                $bubble.hide();
+                setTimeout(function() {
+                    $typing.removeClass('mpwa-typing-active');
+                    $bubble.fadeIn(250);
+                }, 550);
+            }
+
+            setTimeout(function() {
+                $chatInp.focus();
+            }, 250);
+        }
+
+        function closeChatBox() {
+            $widget.removeClass('mpwa-open');
+        }
+
         // Trigger Click: Toggle Chat Box
         $trigger.on('click', function(e) {
             e.preventDefault();
-            var isOpen = $widget.hasClass('mpwa-open');
-            if (isOpen) {
-                $widget.removeClass('mpwa-open');
+            if ($widget.hasClass('mpwa-open')) {
+                closeChatBox();
             } else {
-                $widget.addClass('mpwa-open mpwa-opened');
-                $tooltip.removeClass('mpwa-tooltip-visible');
-                setTimeout(function() {
-                    $chatInp.focus();
-                }, 200);
+                openChatBox();
             }
         });
 
         // Click on tooltip opens chat box
         $tooltip.on('click', function(e) {
             if ($(e.target).closest('.mpwa-chat-tooltip-close').length) return;
-            $widget.addClass('mpwa-open mpwa-opened');
-            $tooltip.removeClass('mpwa-tooltip-visible');
-            setTimeout(function() {
-                $chatInp.focus();
-            }, 200);
+            openChatBox();
         });
 
         // Close tooltip button
@@ -230,25 +250,48 @@ jQuery(document).ready(function($) {
         // Close chat box button
         $(document).on('click', '#mpwa-chat-box-close', function(e) {
             e.preventDefault();
-            $widget.removeClass('mpwa-open');
+            closeChatBox();
         });
 
         // Close on escape key
         $(document).on('keydown', function(e) {
             if (e.key === 'Escape' && $widget.hasClass('mpwa-open')) {
-                $widget.removeClass('mpwa-open');
+                closeChatBox();
             }
+        });
+
+        // Quick Suggestion Chips Click
+        $(document).on('click', '.mpwa-chip-btn', function(e) {
+            e.preventDefault();
+            var chipText = $(this).data('text');
+            if (chipText) {
+                $chatInp.val(chipText).focus();
+                updateDirectLink(chipText);
+                var $btn = $('#mpwa-chat-send-btn');
+                $btn.css({ transform: 'scale(1.2)' });
+                setTimeout(function(){ $btn.css({ transform: '' }); }, 200);
+            }
+        });
+
+        // Update direct link as user types
+        function updateDirectLink(text) {
+            if (!phone) return;
+            var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+            $directLink.attr('href', waUrl);
+        }
+
+        $chatInp.on('input', function() {
+            updateDirectLink($(this).val());
         });
 
         // Send Message action
         function launchWhatsAppChat() {
-            var phone = $widget.data('phone') || '';
-            var text  = $chatInp.val() || $widget.data('default-msg') || '';
+            var text = $chatInp.val() || $widget.data('default-msg') || '';
             if (!phone) return;
 
             var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
             window.open(waUrl, '_blank', 'noopener,noreferrer');
-            $widget.removeClass('mpwa-open');
+            closeChatBox();
         }
 
         $(document).on('click', '#mpwa-chat-send-btn', function(e) {
@@ -261,6 +304,12 @@ jQuery(document).ready(function($) {
                 e.preventDefault();
                 launchWhatsAppChat();
             }
+        });
+
+        $directLink.on('click', function() {
+            setTimeout(function() {
+                closeChatBox();
+            }, 300);
         });
     }
 });

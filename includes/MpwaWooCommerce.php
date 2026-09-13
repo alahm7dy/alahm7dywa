@@ -72,7 +72,7 @@ class MpwaWooCommerce {
         if ( ! isset( $_POST['mpwa_save'] ) ) return;
         if ( ! check_admin_referer( 'mpwa_save_settings', 'mpwa_nonce_field' ) ) wp_die( 'فشل التحقق الأمني.' );
         if ( ! current_user_can( 'manage_options' ) ) wp_die( 'غير مصرح.' );
-        $txt = [ 'device','default_country_code','admin_sms_recipients','telegram_chat_id', 'whatsapp_channel_id', 'webhook_secret', 'newsletter_default_style', 'newsletter_title', 'newsletter_desc', 'newsletter_btn_text', 'newsletter_placeholder', 'newsletter_badge', 'github_repo', 'github_token', 'chat_widget_phone', 'chat_widget_title', 'chat_widget_status', 'chat_widget_greeting', 'chat_widget_position', 'chat_widget_delay' ];
+        $txt = [ 'device','default_country_code','admin_sms_recipients','telegram_chat_id', 'whatsapp_channel_id', 'webhook_secret', 'newsletter_default_style', 'newsletter_title', 'newsletter_desc', 'newsletter_btn_text', 'newsletter_placeholder', 'newsletter_badge', 'github_repo', 'github_token', 'chat_widget_phone', 'chat_widget_title', 'chat_widget_status', 'chat_widget_greeting', 'chat_widget_position', 'chat_widget_delay', 'chat_widget_style', 'chat_widget_sales_phone', 'chat_widget_support_phone' ];
         foreach ( $txt as $f ) update_option( $this->prefix . $f, sanitize_text_field( wp_unslash( $_POST[ $this->prefix . $f ] ?? '' ) ) );
         update_option( $this->prefix . 'url', esc_url_raw( wp_unslash( $_POST[ $this->prefix . 'url' ] ?? '' ) ) );
         foreach ( [ 'api_key', 'telegram_bot_token', 'gemini_api_key' ] as $f ) {
@@ -604,6 +604,7 @@ class MpwaWooCommerce {
     }
 
     /* ── Floating WhatsApp Chat Widget ────────────────── */
+    /* ── Floating WhatsApp Chat Widget ────────────────── */
     public function render_floating_chat_widget() {
         if ( is_admin() ) return;
 
@@ -623,12 +624,17 @@ class MpwaWooCommerce {
         $clean_phone = preg_replace( '/[^0-9]/', '', $phone );
         if ( empty( $clean_phone ) ) return;
 
-        $title       = get_option( $this->prefix . 'chat_widget_title', 'خدمة عملاء المتجر' );
-        $status_txt  = get_option( $this->prefix . 'chat_widget_status', 'متواجدون للرد على استفساراتكم ⚡' );
-        $greeting    = get_option( $this->prefix . 'chat_widget_greeting', 'مرحباً بك! 👋 كيف يمكننا مساعدتك اليوم؟' );
-        $position    = get_option( $this->prefix . 'chat_widget_position', 'right' );
-        $delay       = intval( get_option( $this->prefix . 'chat_widget_delay', '3' ) );
-        $prefilled   = get_option( $this->prefix . 'chat_widget_prefilled', 'مرحباً، لدي استفسار بخصوص {{page_title}}' );
+        $style          = get_option( $this->prefix . 'chat_widget_style', 'glass' );
+        $title          = get_option( $this->prefix . 'chat_widget_title', 'خدمة عملاء المتجر' );
+        $status_txt     = get_option( $this->prefix . 'chat_widget_status', 'متواجدون للرد على استفساراتكم ⚡' );
+        $greeting       = get_option( $this->prefix . 'chat_widget_greeting', 'مرحباً بك! 👋 كيف يمكننا مساعدتك اليوم؟' );
+        $position       = get_option( $this->prefix . 'chat_widget_position', 'right' );
+        $delay          = intval( get_option( $this->prefix . 'chat_widget_delay', '3' ) );
+        $prefilled      = get_option( $this->prefix . 'chat_widget_prefilled', 'مرحباً، لدي استفسار بخصوص {{page_title}}' );
+        $sales_phone    = preg_replace( '/[^0-9]/', '', get_option( $this->prefix . 'chat_widget_sales_phone', '' ) );
+        $support_phone  = preg_replace( '/[^0-9]/', '', get_option( $this->prefix . 'chat_widget_support_phone', '' ) );
+        if ( empty( $sales_phone ) ) $sales_phone = $clean_phone;
+        if ( empty( $support_phone ) ) $support_phone = $clean_phone;
 
         // Dynamic page tags
         $page_title = wp_title( '', false );
@@ -662,16 +668,25 @@ class MpwaWooCommerce {
         $default_msg_encoded = rawurlencode( $msg );
         $direct_wa_url = 'https://wa.me/' . $clean_phone . '?text=' . $default_msg_encoded;
         $pos_class = ( $position === 'left' ) ? 'mpwa-pos-left' : 'mpwa-pos-right';
+        $style_class = 'mpwa-style-' . sanitize_html_class( $style );
         ?>
-        <div id="mpwa-chat-widget" class="mpwa-chat-widget <?php echo esc_attr( $pos_class ); ?>" data-delay="<?php echo esc_attr( $delay ); ?>" data-phone="<?php echo esc_attr( $clean_phone ); ?>" data-default-msg="<?php echo esc_attr( $msg ); ?>">
+        <div id="mpwa-chat-widget" class="mpwa-chat-widget <?php echo esc_attr( $pos_class . ' ' . $style_class ); ?>" data-delay="<?php echo esc_attr( $delay ); ?>" data-phone="<?php echo esc_attr( $clean_phone ); ?>" data-default-msg="<?php echo esc_attr( $msg ); ?>">
             <!-- Floating Trigger Button -->
             <button type="button" id="mpwa-chat-trigger" class="mpwa-chat-trigger" aria-label="تواصل معنا عبر واتساب">
-                <span class="mpwa-chat-pulse"></span>
+                <span class="mpwa-chat-pulse mpwa-chat-pulse-1"></span>
+                <span class="mpwa-chat-pulse mpwa-chat-pulse-2"></span>
+                
                 <span class="mpwa-chat-icon-open">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
-                        <path d="M12.01 2.01A10 10 0 002.01 12c0 1.76.45 3.44 1.3 4.95L2.01 22l5.22-1.37a9.97 9.97 0 004.78 1.21h.01a10 10 0 0010-10 10 10 0 00-10-9.83zM12.01 20.14h-.01a8.31 8.31 0 01-4.23-1.15l-.3-.18-3.15.83.84-3.07-.2-.32A8.34 8.34 0 013.68 12a8.34 8.34 0 018.33-8.33 8.34 8.34 0 01-8.33 8.14zM16.58 13.9c-.25-.12-1.48-.73-1.7-.81-.23-.08-.4-.12-.57.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-1.1-.49-2.07-1.1-2.92-2.14-.23-.28-.02-.27.22-.52.05-.05.11-.12.16-.18.06-.06.08-.12.12-.18.04-.08.02-.15-.01-.21-.03-.06-.25-.6-.35-.82-.09-.21-.18-.18-.25-.18h-.21c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.12.16 1.78 2.71 4.3 3.8.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28z"/>
+                    <!-- Authentic Official WhatsApp Vector Icon -->
+                    <svg viewBox="0 0 32 32" class="mpwa-official-wa-icon" width="34" height="34" fill="currentColor">
+                        <path d="M16.002 0C7.164 0 0 7.163 0 16c0 2.822.735 5.567 2.133 8.01L.062 31.258a1 1 0 0 0 1.257 1.257l7.248-2.071A15.932 15.932 0 0 0 16.002 32C24.839 32 32 24.837 32 16S24.839 0 16.002 0zm0 29.5a13.435 13.435 0 0 1-6.853-1.879l-.491-.291-5.114 1.461 1.461-5.114-.291-.491A13.435 13.435 0 0 1 2.5 16C2.5 8.556 8.558 2.5 16.002 2.5S29.5 8.556 29.5 16s-6.058 13.5-13.498 13.5zm7.391-10.155c-.406-.203-2.404-1.186-2.776-1.321-.372-.136-.643-.203-.914.203-.271.406-1.05 1.321-1.287 1.592-.237.271-.474.305-.88.102-2.316-1.156-3.83-2.072-5.347-4.673-.4-.688.4-.638 1.144-2.127.136-.271.068-.508-.034-.711s-.914-2.201-1.253-3.014c-.33-.792-.667-.684-.914-.697-.237-.012-.508-.014-.779-.014s-.711.102-1.084.508c-.372.406-1.422 1.389-1.422 3.387s1.456 3.929 1.659 4.2c.203.271 2.866 4.377 6.942 6.138 2.57 1.111 3.565 1.218 4.838 1.029.775-.116 2.404-.982 2.743-1.93.339-.948.339-1.761.237-1.93-.102-.17-.372-.271-.779-.474z"/>
                     </svg>
+                    <?php if ( $style === 'pill' ): ?>
+                    <span class="mpwa-pill-label">تحدث معنا</span>
+                    <span class="mpwa-pill-dot"></span>
+                    <?php endif; ?>
                 </span>
+                
                 <span class="mpwa-chat-icon-close">✕</span>
                 <span class="mpwa-chat-badge">1</span>
             </button>
@@ -693,8 +708,8 @@ class MpwaWooCommerce {
                 <div class="mpwa-chat-box-header">
                     <div class="mpwa-chat-box-avatar-wrap">
                         <div class="mpwa-chat-box-avatar">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
-                                <path d="M12.01 2.01A10 10 0 002.01 12c0 1.76.45 3.44 1.3 4.95L2.01 22l5.22-1.37a9.97 9.97 0 004.78 1.21h.01a10 10 0 0010-10 10 10 0 00-10-9.83zM12.01 20.14h-.01a8.31 8.31 0 01-4.23-1.15l-.3-.18-3.15.83.84-3.07-.2-.32A8.34 8.34 0 013.68 12a8.34 8.34 0 018.33-8.33 8.34 8.34 0 01-8.33 8.14zM16.58 13.9c-.25-.12-1.48-.73-1.7-.81-.23-.08-.4-.12-.57.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-1.1-.49-2.07-1.1-2.92-2.14-.23-.28-.02-.27.22-.52.05-.05.11-.12.16-.18.06-.06.08-.12.12-.18.04-.08.02-.15-.01-.21-.03-.06-.25-.6-.35-.82-.09-.21-.18-.18-.25-.18h-.21c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.12.16 1.78 2.71 4.3 3.8.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28z"/>
+                            <svg viewBox="0 0 32 32" width="24" height="24" fill="#ffffff">
+                                <path d="M16.002 0C7.164 0 0 7.163 0 16c0 2.822.735 5.567 2.133 8.01L.062 31.258a1 1 0 0 0 1.257 1.257l7.248-2.071A15.932 15.932 0 0 0 16.002 32C24.839 32 32 24.837 32 16S24.839 0 16.002 0zm0 29.5a13.435 13.435 0 0 1-6.853-1.879l-.491-.291-5.114 1.461 1.461-5.114-.291-.491A13.435 13.435 0 0 1 2.5 16C2.5 8.556 8.558 2.5 16.002 2.5S29.5 8.556 29.5 16s-6.058 13.5-13.498 13.5zm7.391-10.155c-.406-.203-2.404-1.186-2.776-1.321-.372-.136-.643-.203-.914.203-.271.406-1.05 1.321-1.287 1.592-.237.271-.474.305-.88.102-2.316-1.156-3.83-2.072-5.347-4.673-.4-.688.4-.638 1.144-2.127.136-.271.068-.508-.034-.711s-.914-2.201-1.253-3.014c-.33-.792-.667-.684-.914-.697-.237-.012-.508-.014-.779-.014s-.711.102-1.084.508c-.372.406-1.422 1.389-1.422 3.387s1.456 3.929 1.659 4.2c.203.271 2.866 4.377 6.942 6.138 2.57 1.111 3.565 1.218 4.838 1.029.775-.116 2.404-.982 2.743-1.93.339-.948.339-1.761.237-1.93-.102-.17-.372-.271-.779-.474z"/>
                             </svg>
                         </div>
                         <span class="mpwa-chat-box-online-dot"></span>
@@ -708,14 +723,53 @@ class MpwaWooCommerce {
 
                 <!-- Body (WhatsApp Conversation Mock) -->
                 <div class="mpwa-chat-box-body">
-                    <div class="mpwa-chat-msg-bubble">
+                    <!-- Typing Indicator -->
+                    <div class="mpwa-chat-typing-row" id="mpwa-chat-typing">
+                        <span class="mpwa-typing-dot"></span>
+                        <span class="mpwa-typing-dot"></span>
+                        <span class="mpwa-typing-dot"></span>
+                        <span class="mpwa-typing-txt">يكتب الآن...</span>
+                    </div>
+
+                    <!-- Welcome Bubble -->
+                    <div class="mpwa-chat-msg-bubble" id="mpwa-chat-msg-bubble">
                         <p><?php echo nl2br( esc_html( $greeting ) ); ?></p>
                         <span class="mpwa-chat-msg-time"><?php echo date_i18n( 'h:i A' ); ?></span>
                     </div>
+
+                    <?php if ( $style === 'agents' ): ?>
+                    <!-- Multi-Agents Department Options -->
+                    <div class="mpwa-chat-agents-list">
+                        <a href="https://wa.me/<?php echo esc_attr( $sales_phone ); ?>?text=<?php echo esc_attr( rawurlencode( 'مرحباً، أود الاستفسار بخصوص الطلبات والمبيعات: ' . $page_title ) ); ?>" target="_blank" rel="noopener noreferrer" class="mpwa-agent-item">
+                            <div class="mpwa-agent-avatar sales">🛒</div>
+                            <div class="mpwa-agent-info">
+                                <strong>قسم المبيعات والطلبات</strong>
+                                <span>متاح الآن • الرد فوري</span>
+                            </div>
+                            <div class="mpwa-agent-arrow">←</div>
+                        </a>
+
+                        <a href="https://wa.me/<?php echo esc_attr( $support_phone ); ?>?text=<?php echo esc_attr( rawurlencode( 'مرحباً، أحتاج مساعدة أو دعم فني بخصوص: ' . $page_title ) ); ?>" target="_blank" rel="noopener noreferrer" class="mpwa-agent-item">
+                            <div class="mpwa-agent-avatar support">🛠️</div>
+                            <div class="mpwa-agent-info">
+                                <strong>الدعم الفني وخدمة العملاء</strong>
+                                <span>متصل الآن • جاهزون للمساعدة</span>
+                            </div>
+                            <div class="mpwa-agent-arrow">←</div>
+                        </a>
+                    </div>
+                    <?php endif; ?>
                 </div>
 
-                <!-- Footer (Input & Direct WhatsApp Action) -->
+                <!-- Footer (Chips, Input & Direct WhatsApp Action) -->
                 <div class="mpwa-chat-box-footer">
+                    <!-- Interactive Quick Suggestion Chips -->
+                    <div class="mpwa-chat-chips">
+                        <button type="button" class="mpwa-chip-btn" data-text="مرحباً، أود الاستفسار بخصوص تفاصيل هذا المنتج">استفسار عن منتج 🛒</button>
+                        <button type="button" class="mpwa-chip-btn" data-text="مرحباً، أريد تتبع حالة طلبي الأخير">تتبع الطلب 🚚</button>
+                        <button type="button" class="mpwa-chip-btn" data-text="مرحباً، أود معرفة طرق الدفع والشحن المتوفرة">طرق الدفع 💳</button>
+                    </div>
+
                     <div class="mpwa-chat-input-row">
                         <input type="text" id="mpwa-chat-user-input" value="<?php echo esc_attr( $msg ); ?>" placeholder="اكتب رسالتك هنا..." dir="auto">
                         <button type="button" id="mpwa-chat-send-btn" class="mpwa-chat-send-btn" title="إرسال عبر واتساب">
@@ -724,8 +778,12 @@ class MpwaWooCommerce {
                             </svg>
                         </button>
                     </div>
-                    <a href="<?php echo esc_url( $direct_wa_url ); ?>" target="_blank" rel="noopener noreferrer" class="mpwa-chat-direct-link">
-                        <span>💬 بدء المحادثة المباشرة عبر واتساب</span>
+
+                    <a href="<?php echo esc_url( $direct_wa_url ); ?>" target="_blank" rel="noopener noreferrer" class="mpwa-chat-direct-link" id="mpwa-chat-direct-link">
+                        <svg viewBox="0 0 32 32" width="18" height="18" fill="currentColor" style="vertical-align:middle; margin-left:6px;">
+                            <path d="M16.002 0C7.164 0 0 7.163 0 16c0 2.822.735 5.567 2.133 8.01L.062 31.258a1 1 0 0 0 1.257 1.257l7.248-2.071A15.932 15.932 0 0 0 16.002 32C24.839 32 32 24.837 32 16S24.839 0 16.002 0zm0 29.5a13.435 13.435 0 0 1-6.853-1.879l-.491-.291-5.114 1.461 1.461-5.114-.291-.491A13.435 13.435 0 0 1 2.5 16C2.5 8.556 8.558 2.5 16.002 2.5S29.5 8.556 29.5 16s-6.058 13.5-13.498 13.5zm7.391-10.155c-.406-.203-2.404-1.186-2.776-1.321-.372-.136-.643-.203-.914.203-.271.406-1.05 1.321-1.287 1.592-.237.271-.474.305-.88.102-2.316-1.156-3.83-2.072-5.347-4.673-.4-.688.4-.638 1.144-2.127.136-.271.068-.508-.034-.711s-.914-2.201-1.253-3.014c-.33-.792-.667-.684-.914-.697-.237-.012-.508-.014-.779-.014s-.711.102-1.084.508c-.372.406-1.422 1.389-1.422 3.387s1.456 3.929 1.659 4.2c.203.271 2.866 4.377 6.942 6.138 2.57 1.111 3.565 1.218 4.838 1.029.775-.116 2.404-.982 2.743-1.93.339-.948.339-1.761.237-1.93-.102-.17-.372-.271-.779-.474z"/>
+                        </svg>
+                        <span>بدء المحادثة المباشرة عبر واتساب</span>
                     </a>
                 </div>
             </div>
