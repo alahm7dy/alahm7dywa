@@ -11,8 +11,27 @@
         history.replaceState(null, '', '?page=mpwa-settings&tab=' + tab);
     });
 
-    var activeTab = new URLSearchParams(window.location.search).get('tab') || 'api';
-    $('.mpwa-nav-btn[data-tab="' + activeTab + '"]').trigger('click');
+    var urlParams = new URLSearchParams(window.location.search);
+    var hashTab   = window.location.hash ? window.location.hash.replace('#tab-', '').replace('#', '') : '';
+    var activeTab = urlParams.get('tab') || hashTab || 'api';
+
+    if ($('.mpwa-nav-btn[data-tab="' + activeTab + '"]').length) {
+        $('.mpwa-nav-btn[data-tab="' + activeTab + '"]').trigger('click');
+    }
+
+    if (urlParams.get('check_now') === '1' || urlParams.get('check_gh') === '1' || hashTab === 'updates' || activeTab === 'updates') {
+        if (urlParams.get('check_now') === '1' || urlParams.get('check_gh') === '1') {
+            setTimeout(function(){
+                var $target = $('#mpwa-check-gh-update-btn');
+                if ($target.length) {
+                    $('html, body').animate({
+                        scrollTop: $target.offset().top - 80
+                    }, 250);
+                    $target.trigger('click');
+                }
+            }, 300);
+        }
+    }
 
     /* ── Proxy Tab switching (from welcome card & top stats) ── */
     $(document).on('click', '.mpwa-nav-btn-proxy', function(){
@@ -483,30 +502,37 @@
     }
 
     /* ── Check GitHub Update Live Handler ────────────────── */
-    $(document).on('click', '#mpwa-check-gh-update-btn', function(){
+    $(document).on('click', '#mpwa-check-gh-update-btn', function(e){
+        if (e && e.preventDefault) e.preventDefault();
         var $btn = $(this);
         var $res = $('#mpwa-gh-update-result');
         var origHtml = $btn.html();
 
         $btn.prop('disabled', true).html('<span>⏳ جارٍ فحص المستودع...</span>');
-        $res.hide();
+        $res.slideDown(200).css({ background: '#0f2b38', color: '#38bdf8', border: '1px solid #0284c7' })
+            .html('<div style="display:flex; align-items:center; gap:10px;"><span>🔄</span><span>جارٍ الاتصال بمستودع GitHub والتحقق من الإصدارات...</span></div>');
+
+        var nonce = (typeof mpwaAdmin !== 'undefined' && mpwaAdmin.nonce) ? mpwaAdmin.nonce : '';
 
         $.post(ajaxurl, {
             action: 'mpwa_check_github_update',
-            nonce: mpwaAdmin.nonce
+            nonce: nonce
         }, function(r){
             $res.show();
             if(r.success) {
                 if(r.data.is_new) {
                     $res.css({ background: '#f0fdf4', color: '#166534', border: '1.5px solid #bbf7d0' })
                         .html('<div style="font-weight:bold; font-size:15px;">' + r.data.message + '</div>' +
-                              '<div style="margin-top:6px; font-size:13px; color:#15803d;">تاريخ النشر: ' + r.data.published_at + '</div>' +
-                              '<div style="margin-top:12px;"><a href="' + r.data.update_url + '" class="mpwa-btn mpwa-btn-success" style="display:inline-block; text-decoration:none;">⚡ الانتقال لصفحة تحديثات ووردبريس والتحديث الآن</a></div>');
-                    toast('يوجد إصدار جديد متاح (' + r.data.latest_version + ')!', 'success');
+                              '<div style="margin-top:6px; font-size:13px; color:#15803d;">أحدث إصدار متاح: <strong>v' + r.data.latest_version + '</strong> | نُشر بتاريخ: ' + r.data.published_at + '</div>' +
+                              '<div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">' +
+                              '<a href="' + r.data.update_url + '" class="mpwa-btn mpwa-btn-success" style="display:inline-block; text-decoration:none; font-weight:800; padding:10px 18px;">⚡ الانتقال لصفحة تحديثات ووردبريس وتثبيت الإصدار الآن</a>' +
+                              '<a href="' + (r.data.plugins_url || 'plugins.php') + '" class="mpwa-btn" style="background:#fff; color:#166534; border:1px solid #bbf7d0; display:inline-block; text-decoration:none; font-weight:bold; padding:10px 18px;">📋 صفحة الإضافات</a>' +
+                              '</div>');
+                    toast('🚀 يتوفر إصدار جديد متاح (' + r.data.latest_version + ')!', 'success');
                 } else {
                     $res.css({ background: '#f8fafc', color: '#0f172a', border: '1.5px solid #cbd5e1' })
                         .html('<div style="font-weight:bold; font-size:14px; color:#128C7E;">' + r.data.message + '</div>' +
-                              '<div style="margin-top:4px; font-size:12px; color:#64748b;">أحدث إصدار على GitHub هو: v' + r.data.latest_version + ' (' + r.data.published_at + ')</div>');
+                              '<div style="margin-top:4px; font-size:12px; color:#64748b;">أحدث إصدار على GitHub هو: <strong>v' + r.data.latest_version + '</strong> (نُشر بتاريخ: ' + r.data.published_at + ')</div>');
                     toast(r.data.message, 'success');
                 }
             } else {
@@ -514,10 +540,11 @@
                     .html('<strong>⚠️ تنبيه الفحص:</strong> ' + r.data);
                 toast(r.data, 'error');
             }
-        }).fail(function(){
+        }).fail(function(xhr){
+            var err = 'حدث خطأ أثناء الاتصال بالخادم (' + (xhr.status || 'فشل') + '). يرجى التحقق من اتصال الإنترنت أو تحديث الصفحة.';
             $res.show().css({ background: '#fef2f2', color: '#991b1b', border: '1.5px solid #fecaca' })
-                .text('حدث خطأ أثناء الاتصال بالخادم. يرجى المحاولة لاحقاً.');
-            toast('حدث خطأ أثناء الاتصال بالخادم.', 'error');
+                .text(err);
+            toast(err, 'error');
         }).always(function(){
             $btn.prop('disabled', false).html(origHtml);
         });

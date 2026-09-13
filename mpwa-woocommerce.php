@@ -3,7 +3,7 @@
  * Plugin Name:       Alahm7dy WooCommerce WhatsApp
  * Plugin URI:        https://alahm7dy.com
  * Description:       إرسال إشعارات طلبات WooCommerce عبر واتساب وتأكيد الطلبات للوطن العربي.
- * Version:           3.1.0
+ * Version:           3.1.1
  * Author:            علي الاحمدي
  * Author URI:        https://alahm7dy.com
  * Text Domain:       alahm7dy-woocommerce
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MPWA_VERSION',     '3.1.0' );
+define( 'MPWA_VERSION',     '3.1.1' );
 define( 'MPWA_PLUGIN_FILE', __FILE__ );
 define( 'MPWA_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'MPWA_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );

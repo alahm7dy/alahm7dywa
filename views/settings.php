@@ -558,7 +558,13 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
               <div class="mpwa-grid-2">
                 <div class="mpwa-field">
                   <label>اسم المستودع على GitHub (Owner/Repository)</label>
-                  <input type="text" name="<?php echo esc_attr( $p ); ?>github_repo" value="<?php echo esc_attr( get_option( $p . 'github_repo', 'alahm7dy/alahm7dywa' ) ); ?>" placeholder="مثال: alahm7dy/alahm7dywa" dir="ltr" style="text-align:left;">
+                  <?php
+                    $cur_repo = get_option( $p . 'github_repo', '' );
+                    if ( empty( $cur_repo ) || $cur_repo === 'alahm7dy/mpwa-woocommerce' ) {
+                        $cur_repo = 'alahm7dy/alahm7dywa';
+                    }
+                  ?>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>github_repo" value="<?php echo esc_attr( $cur_repo ); ?>" placeholder="مثال: alahm7dy/alahm7dywa" dir="ltr" style="text-align:left;">
                   <p class="mpwa-hint">يجب أن يتطابق مع اسم حسابك واسم المستودع على GitHub بصيغة <code>username/repo</code>.</p>
                 </div>
 

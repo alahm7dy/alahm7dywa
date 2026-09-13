@@ -19,7 +19,11 @@ class MpwaGitHubUpdater {
         $this->file          = $file;
         $this->plugin_slug   = plugin_basename( $file );
         $this->version       = $version;
-        $this->github_repo   = get_option( 'mpedia_wagatewaygithub_repo', 'alahm7dy/alahm7dywa' );
+        $repo = get_option( 'mpedia_wagatewaygithub_repo', '' );
+        if ( empty( $repo ) || $repo === 'alahm7dy/mpwa-woocommerce' ) {
+            $repo = 'alahm7dy/alahm7dywa';
+        }
+        $this->github_repo   = $repo;
         $this->github_token  = get_option( 'mpedia_wagatewaygithub_token', '' );
         $this->transient_key = 'mpwa_gh_update_' . md5( $this->github_repo );
 
@@ -50,8 +54,9 @@ class MpwaGitHubUpdater {
         $url = 'https://api.github.com/repos/' . trim( $this->github_repo, '/' ) . '/releases/latest';
 
         $args = [
-            'timeout' => 12,
-            'headers' => [
+            'timeout'   => 15,
+            'sslverify' => false,
+            'headers'   => [
                 'Accept'     => 'application/vnd.github.v3+json',
                 'User-Agent' => 'WordPress/' . get_bloginfo( 'version' ) . '; ' . home_url(),
             ],
@@ -198,8 +203,10 @@ class MpwaGitHubUpdater {
         }
 
         $proper_destination = WP_PLUGIN_DIR . '/' . dirname( $this->plugin_slug );
-        $wp_filesystem->move( $result['destination'], $proper_destination );
-        $result['destination'] = $proper_destination;
+        if ( isset( $result['destination'] ) && $result['destination'] !== $proper_destination ) {
+            $wp_filesystem->move( $result['destination'], $proper_destination );
+            $result['destination'] = $proper_destination;
+        }
 
         if ( is_plugin_active( $this->plugin_slug ) ) {
             activate_plugin( $this->plugin_slug );
@@ -213,7 +220,7 @@ class MpwaGitHubUpdater {
      */
     public function plugin_row_meta( $meta, $file ) {
         if ( $file === $this->plugin_slug ) {
-            $meta[] = '<a href="' . esc_url( admin_url( 'admin.php?page=mpwa-settings#tab-updates' ) ) . '" style="font-weight:bold; color:#128C7E;">فحص التحديثات 🔄</a>';
+            $meta[] = '<a href="' . esc_url( admin_url( 'admin.php?page=mpwa-settings&tab=updates&check_gh=1' ) ) . '" style="font-weight:bold; color:#128C7E;">فحص التحديثات 🔄</a>';
         }
         return $meta;
     }
@@ -227,12 +234,17 @@ class MpwaGitHubUpdater {
             wp_send_json_error( 'غير مصرح.' );
         }
 
-        // Force fetch fresh from GitHub
+        // Force fetch fresh from GitHub and flush WP transient
         delete_transient( $this->transient_key );
+        delete_site_transient( 'update_plugins' );
+        if ( function_exists( 'wp_clean_plugins_cache' ) ) {
+            wp_clean_plugins_cache();
+        }
+
         $release = $this->get_latest_release( true );
 
         if ( ! $release || empty( $release['tag_name'] ) ) {
-            wp_send_json_error( 'تعذر الاتصال بـ GitHub أو لم يتم العثور على إصدارات (Releases) في المستودع: "' . esc_html( $this->github_repo ) . '". تأكد من كتابة اسم المستودع بشكل صحيح ووجود Release منشور برقم إصدار.' );
+            wp_send_json_error( 'تعذر الاتصال بـ GitHub أو لم يتم العثور على إصدارات (Releases) في المستودع: "' . esc_html( $this->github_repo ) . '". تأكد من كتابة اسم المستودع بشكل صحيح ووجود اتصال بالإنترنت.' );
         }
 
         $remote_version = ltrim( $release['tag_name'], 'vV' );
@@ -246,8 +258,9 @@ class MpwaGitHubUpdater {
             'release_notes'   => ! empty( $release['body'] ) ? $release['body'] : 'لا توجد ملاحظات إضافية لهذا الإصدار.',
             'published_at'    => date_i18n( 'Y-m-d H:i', strtotime( $release['published_at'] ?? 'now' ) ),
             'update_url'      => admin_url( 'update-core.php' ),
+            'plugins_url'     => admin_url( 'plugins.php' ),
             'message'         => $is_new 
-                ? '🚀 يتوفر إصدار جديد (' . $remote_version . ')! يمكنك الآن الانتقال لصفحة تحديثات ووردبريس وتثبيته فوراً.'
+                ? '🚀 يتوفر إصدار جديد (' . $remote_version . ')! يمكنك الآن الانتقال لصفحة تحديثات ووردبريس أو صفحة الإضافات وتثبيته فوراً.'
                 : '✅ الإضافة محدثة بالكامل لأحدث إصدار متوفر (' . $this->version . '). لا توجد تحديثات جديدة حالياً.',
         ];
 

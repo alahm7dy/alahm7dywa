@@ -30,6 +30,4 @@ require __DIR__ . '/GeminiHandler.php';
 require __DIR__ . '/PdfInvoice.php';
 require __DIR__ . '/GitHubUpdater.php';
 
-if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
-    new MpwaGitHubUpdater( MPWA_PLUGIN_FILE, MPWA_VERSION );
-}
+new MpwaGitHubUpdater( MPWA_PLUGIN_FILE, MPWA_VERSION );
