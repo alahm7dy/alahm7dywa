@@ -1,0 +1,930 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   Alahm7dy WhatsApp Pro - Frontend Styles (Arabic RTL & Responsive)
+   ========================================================================== */
+
+:root {
+    --mpwa-font: 'Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mpwa-whatsapp: #25D366;
+    --mpwa-primary: #128C7E;
+    --mpwa-primary-dark: #075E54;
+    --mpwa-bg: #f8fafc;
+    --mpwa-card: #ffffff;
+    --mpwa-border: #e2e8f0;
+    --mpwa-text: #1e293b;
+    --mpwa-text-muted: #64748b;
+    --mpwa-radius: 14px;
+    --mpwa-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* ── WooCommerce Customer Login Divider ─────────────────── */
+.mpwa-woo-login-divider {
+    position: relative;
+    text-align: center;
+    margin: 30px 0 20px;
+}
+
+.mpwa-woo-login-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--mpwa-border);
+}
+
+.mpwa-woo-login-divider span {
+    position: relative;
+    background: #ffffff;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mpwa-text-muted);
+    font-family: var(--mpwa-font);
+}
+
+/* ── OTP Login Wrapper ──────────────────────────────────── */
+.mpwa-otp-wrapper {
+    font-family: var(--mpwa-font);
+    background: var(--mpwa-card);
+    border: 1.5px solid var(--mpwa-border);
+    border-radius: var(--mpwa-radius);
+    padding: 24px;
+    box-shadow: var(--mpwa-shadow);
+    margin: 15px 0 25px;
+    direction: rtl;
+    text-align: right;
+    position: relative;
+    overflow: hidden;
+}
+
+.mpwa-otp-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--mpwa-whatsapp), var(--mpwa-primary));
+}
+
+.mpwa-otp-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.mpwa-otp-icon {
+    width: 44px;
+    height: 44px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: var(--mpwa-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mpwa-otp-title-wrap h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--mpwa-text);
+}
+
+.mpwa-otp-title-wrap p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--mpwa-text-muted);
+}
+
+.mpwa-otp-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.mpwa-otp-form p.form-row {
+    margin: 0 0 16px 0;
+    padding: 0;
+}
+
+.mpwa-otp-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mpwa-text);
+    margin-bottom: 6px;
+}
+
+.mpwa-otp-form input[type="tel"],
+.mpwa-otp-form input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: var(--mpwa-font);
+    font-size: 15px;
+    color: var(--mpwa-text);
+    background: #f8fafc;
+    border: 1.5px solid var(--mpwa-border);
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.25s ease;
+    direction: ltr;
+    text-align: left;
+}
+
+.mpwa-otp-form input:focus {
+    background: #ffffff;
+    border-color: var(--mpwa-whatsapp);
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
+}
+
+/* 6-Digit OTP Spaced Code Input */
+.mpwa-otp-form .mpwa-code-input {
+    letter-spacing: 10px;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+    text-align: center !important;
+    font-family: Consolas, monospace !important;
+    color: var(--mpwa-primary-dark) !important;
+    background: #f0fdf4 !important;
+    border-color: #bbf7d0 !important;
+    height: 54px;
+}
+
+.mpwa-btn-whatsapp,
+.mpwa-btn-verify {
+    width: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 20px !important;
+    background: linear-gradient(135deg, var(--mpwa-whatsapp) 0%, var(--mpwa-primary) 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-family: var(--mpwa-font) !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.25) !important;
+    transition: all 0.25s ease !important;
+    text-shadow: none !important;
+}
+
+.mpwa-btn-whatsapp:hover,
+.mpwa-btn-verify:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(37, 211, 102, 0.35) !important;
+    color: #ffffff !important;
+}
+
+.mpwa-btn-whatsapp:disabled,
+.mpwa-btn-verify:disabled {
+    background: #94a3b8 !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.mpwa-otp-resend-row {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.mpwa-link-btn {
+    background: none;
+    border: none;
+    color: var(--mpwa-primary);
+    font-family: var(--mpwa-font);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+}
+
+.mpwa-link-btn:hover {
+    color: var(--mpwa-primary-dark);
+}
+
+.mpwa-otp-msg {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.mpwa-otp-msg.success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.mpwa-otp-msg.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* ==========================================================================
+   إزالة الأعلام نهائياً (Remove All Country Flags Completely)
+   ========================================================================== */
+.iti__flag,
+.iti__flag-box,
+.iti__selected-flag .iti__flag,
+.iti__country-list .iti__flag,
+.iti__flag-container .iti__flag {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.iti__selected-dial-code {
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    color: var(--mpwa-primary-dark, #075E54) !important;
+    direction: ltr !important;
+}
+
+.iti__selected-flag {
+    padding: 0 10px !important;
+}
+
+/* ==========================================================================
+   نظام ستايلات مربع الاشتراك في النشرة البريدية (6 Modern Newsletter Styles)
+   ========================================================================== */
+
+/* ── Base Reset & Shared Rules ──────────────────────────── */
+.mpwa-newsletter-wrapper {
+    font-family: var(--mpwa-font);
+    direction: rtl;
+    text-align: right;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 24px 0;
+}
+
+.mpwa-newsletter-wrapper * {
+    box-sizing: border-box;
+}
+
+.mpwa-newsletter-msg {
+    margin-top: 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-align: center;
+    padding: 11px 16px;
+    border-radius: 10px;
+    line-height: 1.5;
+    animation: mpwaNlFadeIn 0.3s ease;
+}
+
+.mpwa-newsletter-msg.success {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1.5px solid #bbf7d0;
+}
+
+.mpwa-newsletter-msg.error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1.5px solid #fecaca;
+}
+
+@keyframes mpwaNlFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ──────────────────────────────────────────────────────────
+   1. Style 1: Modern Card (البطاقة الحديثة الفاخرة - الافتراضي)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-card {
+    max-width: 540px;
+    margin: 30px auto;
+}
+
+.mpwa-nl-style-card .mpwa-nl-card-box {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 34px 28px;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.mpwa-nl-style-card .mpwa-nl-card-box::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; left: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #25D366, #128C7E);
+}
+
+.mpwa-nl-style-card .mpwa-nl-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: #f0fdf4;
+    color: #128C7E;
+    border: 1px solid #bbf7d0;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.mpwa-nl-style-card .mpwa-nl-icon-badge {
+    width: 66px;
+    height: 66px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+}
+
+.mpwa-nl-style-card .mpwa-nl-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.mpwa-nl-style-card .mpwa-nl-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 22px;
+    line-height: 1.6;
+}
+
+.mpwa-nl-style-card .mpwa-nl-field-wrap {
+    margin-bottom: 14px;
+}
+
+.mpwa-nl-style-card input[type="tel"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    font-family: var(--mpwa-font);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.25s ease;
+    background: #f8fafc;
+    text-align: left;
+    direction: ltr;
+}
+
+.mpwa-nl-style-card input[type="tel"]:focus {
+    background: #ffffff;
+    border-color: #25D366;
+    box-shadow: 0 0 0 3.5px rgba(37, 211, 102, 0.18);
+}
+
+.mpwa-nl-style-card .mpwa-newsletter-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--mpwa-font);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(37, 211, 102, 0.28);
+    transition: all 0.25s ease;
+}
+
+.mpwa-nl-style-card .mpwa-newsletter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(37, 211, 102, 0.38);
+}
+
+.mpwa-nl-style-card .mpwa-newsletter-btn:disabled {
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ──────────────────────────────────────────────────────────
+   2. Style 2: Minimal Inline Banner (الشريط المدمج)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-inline {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.mpwa-nl-style-inline .mpwa-nl-inline-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-inline-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1 1 300px;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-mini-icon {
+    width: 46px;
+    height: 46px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #128C7E;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-desc {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-inline-form {
+    flex: 1 1 340px;
+}
+
+.mpwa-nl-style-inline .mpwa-nl-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.mpwa-nl-style-inline input[type="tel"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    outline: none;
+    background: #f8fafc;
+    direction: ltr;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.mpwa-nl-style-inline input[type="tel"]:focus {
+    background: #fff;
+    border-color: #25D366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.15);
+}
+
+.mpwa-nl-style-inline .mpwa-newsletter-btn {
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.mpwa-nl-style-inline .mpwa-newsletter-btn:hover {
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+}
+
+/* ──────────────────────────────────────────────────────────
+   3. Style 3: VIP Dark Glassmorphism (الوضع الداكن الفاخر)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-dark {
+    max-width: 540px;
+    margin: 30px auto;
+}
+
+.mpwa-nl-style-dark .mpwa-nl-card-box {
+    background: linear-gradient(145deg, #07191d 0%, #0d2a2f 100%);
+    border: 1.5px solid rgba(37, 211, 102, 0.25);
+    border-radius: 22px;
+    padding: 34px 28px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35), 0 0 30px rgba(37, 211, 102, 0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.mpwa-nl-style-dark .mpwa-nl-badge-dark {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(37, 211, 102, 0.12);
+    color: #25D366;
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.mpwa-nl-style-dark .mpwa-nl-icon-dark {
+    width: 66px;
+    height: 66px;
+    background: linear-gradient(135deg, #25D366 0%, #075E54 100%);
+    color: #ffffff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 24px rgba(37, 211, 102, 0.35);
+}
+
+.mpwa-nl-style-dark .mpwa-nl-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px;
+}
+
+.mpwa-nl-style-dark .mpwa-nl-desc {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0 0 22px;
+    line-height: 1.6;
+}
+
+.mpwa-nl-style-dark input[type="tel"] {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    font-family: var(--mpwa-font);
+    font-size: 15px;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.25s ease;
+    text-align: left;
+    direction: ltr;
+    margin-bottom: 14px;
+}
+
+.mpwa-nl-style-dark input[type="tel"]:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #25D366;
+    box-shadow: 0 0 16px rgba(37, 211, 102, 0.35);
+}
+
+.mpwa-nl-style-dark .mpwa-nl-btn-glow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #25D366 0%, #10b981 100%);
+    color: #052e16;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--mpwa-font);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 22px rgba(37, 211, 102, 0.4);
+    transition: all 0.25s ease;
+}
+
+.mpwa-nl-style-dark .mpwa-nl-btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(37, 211, 102, 0.6);
+}
+
+/* ──────────────────────────────────────────────────────────
+   4. Style 4: Sticky Bottom Floating Bar (الشريط العائم)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-floating {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    z-index: 99999 !important;
+    background: rgba(13, 37, 41, 0.94) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1.5px solid rgba(37, 211, 102, 0.3);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25);
+    padding: 12px 24px !important;
+    color: #ffffff;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-close-btn {
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #cbd5e1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-close-btn:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding-left: 36px;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-icon {
+    font-size: 26px;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-text small {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.mpwa-nl-style-floating .mpwa-nl-floating-form .mpwa-nl-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.mpwa-nl-style-floating input[type="tel"] {
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    direction: ltr;
+    text-align: left;
+    outline: none;
+    width: 220px;
+}
+
+.mpwa-nl-style-floating input[type="tel"]:focus {
+    border-color: #25D366;
+}
+
+.mpwa-nl-style-floating .mpwa-newsletter-btn {
+    padding: 10px 20px;
+    background: #25D366;
+    color: #064e3b;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.mpwa-nl-style-floating .mpwa-newsletter-btn:hover {
+    background: #10b981;
+    color: #fff;
+}
+
+/* ──────────────────────────────────────────────────────────
+   5. Style 5: Clean Minimal (المينيمال البسيط)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-minimal {
+    padding: 16px 0;
+}
+
+.mpwa-nl-style-minimal .mpwa-nl-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+}
+
+.mpwa-nl-style-minimal .mpwa-nl-desc {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 14px;
+}
+
+.mpwa-nl-style-minimal .mpwa-nl-minimal-form {
+    display: flex;
+    gap: 8px;
+}
+
+.mpwa-nl-style-minimal input[type="tel"] {
+    flex: 1;
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    background: #f8fafc;
+    direction: ltr;
+    text-align: left;
+    outline: none;
+}
+
+.mpwa-nl-style-minimal input[type="tel"]:focus {
+    border-color: #128C7E;
+    background: #fff;
+}
+
+.mpwa-nl-style-minimal .mpwa-newsletter-btn {
+    padding: 11px 18px;
+    background: #128C7E;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--mpwa-font);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* ──────────────────────────────────────────────────────────
+   6. Style 6: Royal Emerald Gradient (التدرج الزمردي الملكي)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-style-gradient {
+    max-width: 580px;
+    margin: 30px auto;
+}
+
+.mpwa-nl-style-gradient .mpwa-nl-gradient-inner {
+    background: linear-gradient(135deg, #075E54 0%, #128C7E 50%, #16a34a 100%);
+    border-radius: 22px;
+    padding: 34px 28px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 16px 36px rgba(7, 94, 84, 0.25);
+}
+
+.mpwa-nl-style-gradient .mpwa-nl-badge-light {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.mpwa-nl-style-gradient .mpwa-nl-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 8px;
+}
+
+.mpwa-nl-style-gradient .mpwa-nl-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 0 22px;
+    line-height: 1.6;
+}
+
+.mpwa-nl-style-gradient .mpwa-nl-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.mpwa-nl-style-gradient input[type="tel"] {
+    flex: 1;
+    padding: 13px 18px;
+    background: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--mpwa-font);
+    font-size: 15px;
+    color: #0f172a;
+    outline: none;
+    direction: ltr;
+    text-align: left;
+}
+
+.mpwa-nl-style-gradient .mpwa-btn-white {
+    padding: 13px 24px;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--mpwa-font);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.mpwa-nl-style-gradient .mpwa-btn-white:hover {
+    background: #000000;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Responsive Rules
+   ────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .mpwa-nl-style-inline .mpwa-nl-inline-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .mpwa-nl-style-inline .mpwa-nl-input-group {
+        flex-direction: column;
+    }
+    .mpwa-nl-style-inline .mpwa-newsletter-btn {
+        width: 100%;
+    }
+    .mpwa-nl-style-floating .mpwa-nl-floating-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding-left: 0;
+        padding-top: 14px;
+    }
+    .mpwa-nl-style-floating input[type="tel"] {
+        width: 100%;
+    }
+    .mpwa-nl-style-floating .mpwa-nl-floating-form .mpwa-nl-input-group {
+        flex-direction: column;
+    }
+    .mpwa-nl-style-floating .mpwa-newsletter-btn {
+        width: 100%;
+    }
+    .mpwa-nl-style-gradient .mpwa-nl-input-group {
+        flex-direction: column;
+    }
+    .mpwa-nl-style-gradient .mpwa-btn-white {
+        width: 100%;
+    }
+    .mpwa-nl-style-minimal .mpwa-nl-minimal-form {
+        flex-direction: column;
+    }
+    .mpwa-nl-style-minimal .mpwa-newsletter-btn {
+        width: 100%;
+    }
+}

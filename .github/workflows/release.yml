@@ -1,0 +1,59 @@
+name: Release & Package Plugin
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Package Plugin & Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Release Version
+        id: vars
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG_NAME="${{ github.ref_name }}"
+          else
+            TAG_NAME="v$(grep -i "Version:" mpwa-woocommerce.php | head -n 1 | awk '{print $NF}')"
+          fi
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "Building package for ${TAG_NAME}..."
+
+      - name: Package Plugin ZIP
+        run: |
+          mkdir -p build/mpwa-woocommerce
+          rsync -av --progress ./ build/mpwa-woocommerce/ \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.agents' \
+            --exclude 'build' \
+            --exclude 'test_*.php' \
+            --exclude '*.zip' \
+            --exclude '*.log'
+          
+          cd build
+          zip -r ../mpwa-woocommerce.zip mpwa-woocommerce
+          cd ..
+          ls -lh mpwa-woocommerce.zip
+
+      - name: Create GitHub Release & Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag_name }}
+          name: Release ${{ steps.vars.outputs.tag_name }}
+          files: mpwa-woocommerce.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

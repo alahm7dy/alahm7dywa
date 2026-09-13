@@ -1,0 +1,16 @@
+# Ignore environment and IDE files
+.agents/
+.vscode/
+.idea/
+
+# Ignore logs and archives
+*.log
+*.zip
+
+# Ignore local test scripts
+test_gemini.php
+test_products.php
+
+# OS metadata
+.DS_Store
+Thumbs.db
