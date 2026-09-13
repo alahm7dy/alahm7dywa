@@ -168,4 +168,99 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    /* ── Floating WhatsApp Chat Widget ───────────────────── */
+    var $widget   = $('#mpwa-chat-widget');
+    var $trigger  = $('#mpwa-chat-trigger');
+    var $tooltip  = $('#mpwa-chat-tooltip');
+    var $chatInp  = $('#mpwa-chat-user-input');
+
+    if ($widget.length) {
+        var delaySec = parseInt($widget.data('delay'), 10);
+        if (isNaN(delaySec)) delaySec = 3;
+
+        // Auto-show tooltip if not dismissed
+        var tooltipDismissed = false;
+        try {
+            tooltipDismissed = sessionStorage.getItem('mpwa_tooltip_dismissed') === '1';
+        } catch(e) {}
+
+        if (!tooltipDismissed && delaySec > 0 && $tooltip.length) {
+            setTimeout(function() {
+                if (!$widget.hasClass('mpwa-open')) {
+                    $tooltip.addClass('mpwa-tooltip-visible');
+                }
+            }, delaySec * 1000);
+        }
+
+        // Trigger Click: Toggle Chat Box
+        $trigger.on('click', function(e) {
+            e.preventDefault();
+            var isOpen = $widget.hasClass('mpwa-open');
+            if (isOpen) {
+                $widget.removeClass('mpwa-open');
+            } else {
+                $widget.addClass('mpwa-open mpwa-opened');
+                $tooltip.removeClass('mpwa-tooltip-visible');
+                setTimeout(function() {
+                    $chatInp.focus();
+                }, 200);
+            }
+        });
+
+        // Click on tooltip opens chat box
+        $tooltip.on('click', function(e) {
+            if ($(e.target).closest('.mpwa-chat-tooltip-close').length) return;
+            $widget.addClass('mpwa-open mpwa-opened');
+            $tooltip.removeClass('mpwa-tooltip-visible');
+            setTimeout(function() {
+                $chatInp.focus();
+            }, 200);
+        });
+
+        // Close tooltip button
+        $(document).on('click', '.mpwa-chat-tooltip-close', function(e) {
+            e.stopPropagation();
+            $tooltip.removeClass('mpwa-tooltip-visible');
+            try {
+                sessionStorage.setItem('mpwa_tooltip_dismissed', '1');
+            } catch(err) {}
+        });
+
+        // Close chat box button
+        $(document).on('click', '#mpwa-chat-box-close', function(e) {
+            e.preventDefault();
+            $widget.removeClass('mpwa-open');
+        });
+
+        // Close on escape key
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $widget.hasClass('mpwa-open')) {
+                $widget.removeClass('mpwa-open');
+            }
+        });
+
+        // Send Message action
+        function launchWhatsAppChat() {
+            var phone = $widget.data('phone') || '';
+            var text  = $chatInp.val() || $widget.data('default-msg') || '';
+            if (!phone) return;
+
+            var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(text);
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
+            $widget.removeClass('mpwa-open');
+        }
+
+        $(document).on('click', '#mpwa-chat-send-btn', function(e) {
+            e.preventDefault();
+            launchWhatsAppChat();
+        });
+
+        $chatInp.on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                launchWhatsAppChat();
+            }
+        });
+    }
 });

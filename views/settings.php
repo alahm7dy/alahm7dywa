@@ -32,6 +32,7 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
         <button class="mpwa-nav-btn" data-tab="customer"><span class="mpwa-nav-icon">👤</span> إشعارات العملاء</button>
         <button class="mpwa-nav-btn" data-tab="admin"><span class="mpwa-nav-icon">🛡️</span> إشعارات الإدارة</button>
         <button class="mpwa-nav-btn" data-tab="templates"><span class="mpwa-nav-icon">📝</span> قوالب الرسائل</button>
+        <button class="mpwa-nav-btn" data-tab="chat-widget"><span class="mpwa-nav-icon">💬</span> الشات العائم</button>
         <button class="mpwa-nav-btn" data-tab="ai"><span class="mpwa-nav-icon">🤖</span> الذكاء الاصطناعي</button>
         <button class="mpwa-nav-btn" data-tab="advanced"><span class="mpwa-nav-icon">🚀</span> الويب هوك & OTP</button>
         <button class="mpwa-nav-btn" data-tab="device"><span class="mpwa-nav-icon">📱</span> إدارة الجهاز</button>
@@ -294,6 +295,117 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
                 </div>
                 <div id="mpwa-ai-test-response" class="mpwa-tester-response"></div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Chat Widget Panel -->
+        <div class="mpwa-panel" id="mpwa-panel-chat-widget">
+          <div class="mpwa-card" style="margin-bottom:24px;">
+            <div class="mpwa-card-header">
+              <h2>ويدجت الشات العائم في المتجر (Floating WhatsApp Chat)</h2>
+              <p>أيقونة تواصل فورية عائمة تظهر في واجهة المتجر تتيح لزوارك وعملائك التواصل معك بنقرة واحدة مع رسائل ذكية مخصصة.</p>
+            </div>
+            <div class="mpwa-card-body">
+              <div class="mpwa-toggle-row">
+                <div>
+                  <strong style="font-size:15px; display:block; margin-bottom:4px;">تفعيل ويدجت الشات العائم في المتجر</strong>
+                  <span style="font-size:13px; color:var(--c-muted);">إظهار أيقونة الواتساب العائمة لزوار المتجر.</span>
+                </div>
+                <label class="mpwa-switch">
+                  <input type="checkbox" name="<?php echo esc_attr( $p ); ?>enable_chat_widget" <?php checked( get_option( $p . 'enable_chat_widget', 'yes' ), 'yes' ); ?>>
+                  <span class="mpwa-slider"></span>
+                </label>
+              </div>
+
+              <hr style="border:none; border-top:1px solid var(--c-border); margin:20px 0;">
+
+              <div class="mpwa-grid-2">
+                <div class="mpwa-field">
+                  <label>رقم واتساب المخصص للشات (مع رمز الدولة بدون +)</label>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_phone" value="<?php echo esc_attr( get_option( $p . 'chat_widget_phone', '' ) ); ?>" placeholder="مثال: 966500000000" dir="ltr" style="text-align:left;">
+                  <p class="mpwa-hint">إذا تركته فارغاً، سيتم استخدام رقم الجهاز المربوط في الإضافة تلقائياً.</p>
+                </div>
+
+                <div class="mpwa-field">
+                  <label>موضع الأيقونة على الشاشة</label>
+                  <?php $cur_pos = get_option( $p . 'chat_widget_position', 'right' ); ?>
+                  <select name="<?php echo esc_attr( $p ); ?>chat_widget_position">
+                    <option value="right" <?php selected( $cur_pos, 'right' ); ?>>أسفل اليمين (Right Bottom)</option>
+                    <option value="left" <?php selected( $cur_pos, 'left' ); ?>>أسفل اليسار (Left Bottom)</option>
+                  </select>
+                  <p class="mpwa-hint">اختر الموضع الأنسب لتصميم متجرك بحيث لا يتعارض مع الأزرار الأخرى.</p>
+                </div>
+              </div>
+
+              <div class="mpwa-grid-2" style="margin-top:16px;">
+                <div class="mpwa-field">
+                  <label>اسم المسؤول / عنوان النافذة</label>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_title" value="<?php echo esc_attr( get_option( $p . 'chat_widget_title', 'خدمة عملاء المتجر' ) ); ?>" placeholder="مثال: خدمة عملاء المتجر">
+                </div>
+
+                <div class="mpwa-field">
+                  <label>نص الحالة والتواجد</label>
+                  <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_status" value="<?php echo esc_attr( get_option( $p . 'chat_widget_status', 'متواجدون للرد على استفساراتكم ⚡' ) ); ?>" placeholder="مثال: نرد خلال دقائق ⚡">
+                </div>
+              </div>
+
+              <div class="mpwa-field" style="margin-top:16px;">
+                <label>رسالة الترحيب التلقائية (Greeting Bubble)</label>
+                <input type="text" name="<?php echo esc_attr( $p ); ?>chat_widget_greeting" value="<?php echo esc_attr( get_option( $p . 'chat_widget_greeting', 'مرحباً بك! 👋 كيف يمكننا مساعدتك اليوم؟' ) ); ?>" placeholder="نص الرسالة الترحيبية...">
+                <p class="mpwa-hint">فقاعة كلامية منبثقة تلفت انتباه الزائر بعد دخوله الموقع.</p>
+              </div>
+
+              <div class="mpwa-grid-2" style="margin-top:16px;">
+                <div class="mpwa-field">
+                  <label>توقيت ظهور الرسالة الترحيبية (بالثواني)</label>
+                  <input type="number" min="0" max="60" name="<?php echo esc_attr( $p ); ?>chat_widget_delay" value="<?php echo esc_attr( get_option( $p . 'chat_widget_delay', '3' ) ); ?>" style="max-width:140px;">
+                  <p class="mpwa-hint">عدد الثواني قبل انبثاق الرسالة الترحيبية (0 لإيقافها).</p>
+                </div>
+
+                <div class="mpwa-field" style="display:flex; flex-direction:column; justify-content:center;">
+                  <div class="mpwa-toggle-row">
+                    <div>
+                      <strong style="font-size:14px; display:block;">إخفاء الشات في صفحتي السلة والدفع</strong>
+                      <span style="font-size:12.5px; color:var(--c-muted);">لحماية تجربة الدفع وعدم تشتيت العميل.</span>
+                    </div>
+                    <label class="mpwa-switch">
+                      <input type="checkbox" name="<?php echo esc_attr( $p ); ?>chat_widget_hide_checkout" <?php checked( get_option( $p . 'chat_widget_hide_checkout', 'yes' ), 'yes' ); ?>>
+                      <span class="mpwa-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mpwa-field" style="margin-top:18px;">
+                <label>قالب الرسالة المسبقة الذكية (Pre-filled Message Template)</label>
+                <textarea name="<?php echo esc_attr( $p ); ?>chat_widget_prefilled" rows="3"><?php echo esc_textarea( get_option( $p . 'chat_widget_prefilled', 'مرحباً، لدي استفسار بخصوص {{page_title}}' ) ); ?></textarea>
+                <p class="mpwa-hint">
+                  الرسالة التي ستكون مكتوبة جاهزة في واتساب العميل عند النقر. يمكنك استخدام الوسوم الديناميكية التالية:
+                </p>
+                <div class="mpwa-tags" style="margin-top:8px;">
+                  <span class="mpwa-tag" title="عنوان الصفحة أو اسم المنتج">{{page_title}}</span>
+                  <span class="mpwa-tag" title="رابط الصفحة الحالية">{{page_url}}</span>
+                  <span class="mpwa-tag" title="سعر المنتج">{{product_price}}</span>
+                  <span class="mpwa-tag" title="اسم متجرك">{{shop_name}}</span>
+                </div>
+              </div>
+
+              <!-- Live Preview Card -->
+              <div style="margin-top:24px; padding:18px; background:linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border:1px solid #cbd5e1; border-radius:12px;">
+                <h4 style="margin:0 0 8px 0; font-size:14px; color:var(--c-primary-dark); font-weight:800;">✨ معاينة لشكل الويدجت في المتجر</h4>
+                <p style="font-size:13px; color:#64748b; margin:0 0 14px 0;">سيظهر الويدجت في زاوية المتجر بشكل أنيق وسلس:</p>
+                <div style="display:inline-flex; align-items:center; gap:12px; background:#fff; padding:10px 16px; border-radius:30px; box-shadow:0 8px 24px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.04);">
+                  <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #25D366 0%, #128C7E 100%); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; box-shadow:0 4px 12px rgba(37,211,102,0.4);">
+                    💬
+                  </div>
+                  <div>
+                    <div style="font-size:13.5px; font-weight:700; color:#0f172a;">خدمة عملاء المتجر</div>
+                    <div style="font-size:11.5px; color:#16a34a;">● متواجدون للرد الآن</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

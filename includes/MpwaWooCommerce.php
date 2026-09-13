@@ -28,11 +28,12 @@ class MpwaWooCommerce {
         add_action( 'wp_ajax_mpwa_logout_device',   [ $this, 'ajax_logout_device' ] );
         add_action( 'wp_ajax_mpwa_delete_device',   [ $this, 'ajax_delete_device' ] );
         
-        // Frontend & Shortcode
+        // Frontend, Shortcode & Chat Widget
         add_action( 'wp_enqueue_scripts',           [ $this, 'enqueue_frontend_assets' ] );
         add_shortcode( 'mpwa_newsletter',           [ $this, 'shortcode_newsletter' ] );
         add_action( 'wp_ajax_mpwa_subscribe_newsletter', [ $this, 'ajax_subscribe_newsletter' ] );
         add_action( 'wp_ajax_nopriv_mpwa_subscribe_newsletter', [ $this, 'ajax_subscribe_newsletter' ] );
+        add_action( 'wp_footer',                    [ $this, 'render_floating_chat_widget' ] );
 
         // Channel Auto-Post
         add_action( 'transition_post_status', [ $this, 'auto_post_to_channel' ], 10, 3 );
@@ -71,16 +72,16 @@ class MpwaWooCommerce {
         if ( ! isset( $_POST['mpwa_save'] ) ) return;
         if ( ! check_admin_referer( 'mpwa_save_settings', 'mpwa_nonce_field' ) ) wp_die( 'فشل التحقق الأمني.' );
         if ( ! current_user_can( 'manage_options' ) ) wp_die( 'غير مصرح.' );
-        $txt = [ 'device','default_country_code','admin_sms_recipients','telegram_chat_id', 'whatsapp_channel_id', 'webhook_secret', 'newsletter_default_style', 'newsletter_title', 'newsletter_desc', 'newsletter_btn_text', 'newsletter_placeholder', 'newsletter_badge', 'github_repo', 'github_token' ];
+        $txt = [ 'device','default_country_code','admin_sms_recipients','telegram_chat_id', 'whatsapp_channel_id', 'webhook_secret', 'newsletter_default_style', 'newsletter_title', 'newsletter_desc', 'newsletter_btn_text', 'newsletter_placeholder', 'newsletter_badge', 'github_repo', 'github_token', 'chat_widget_phone', 'chat_widget_title', 'chat_widget_status', 'chat_widget_greeting', 'chat_widget_position', 'chat_widget_delay' ];
         foreach ( $txt as $f ) update_option( $this->prefix . $f, sanitize_text_field( wp_unslash( $_POST[ $this->prefix . $f ] ?? '' ) ) );
         update_option( $this->prefix . 'url', esc_url_raw( wp_unslash( $_POST[ $this->prefix . 'url' ] ?? '' ) ) );
         foreach ( [ 'api_key', 'telegram_bot_token', 'gemini_api_key' ] as $f ) {
             $value = sanitize_text_field( wp_unslash( $_POST[ $this->prefix . $f ] ?? '' ) );
             if ( $value !== '' ) update_option( $this->prefix . $f, $value );
         }
-        $tpl = [ 'default_sms_template','admin_sms_template','note_sms_template','telegram_template', 'gemini_system_prompt' ];
+        $tpl = [ 'default_sms_template','admin_sms_template','note_sms_template','telegram_template', 'gemini_system_prompt', 'chat_widget_prefilled' ];
         foreach ( $tpl as $f ) update_option( $this->prefix . $f, sanitize_textarea_field( $_POST[ $this->prefix . $f ] ?? '' ) );
-        $bools = [ 'enable_admin_sms','enable_notes_sms','enable_telegram_sms', 'enable_ai_bot', 'enable_feature_abandoned_cart', 'enable_feature_otp_login', 'enable_feature_webhook', 'enable_admin_2fa', 'enable_invoice_receipt', 'enable_feedback_poll' ];
+        $bools = [ 'enable_admin_sms','enable_notes_sms','enable_telegram_sms', 'enable_ai_bot', 'enable_feature_abandoned_cart', 'enable_feature_otp_login', 'enable_feature_webhook', 'enable_admin_2fa', 'enable_invoice_receipt', 'enable_feedback_poll', 'enable_chat_widget', 'chat_widget_hide_checkout' ];
         foreach ( $bools as $f ) update_option( $this->prefix . $f, isset( $_POST[ $this->prefix . $f ] ) ? 'yes' : 'no' );
         foreach ( wc_get_order_statuses() as $key => $val ) {
             $k = str_replace( 'wc-', '', $key );
@@ -600,6 +601,136 @@ class MpwaWooCommerce {
                 ] );
             }
         }
+    }
+
+    /* ── Floating WhatsApp Chat Widget ────────────────── */
+    public function render_floating_chat_widget() {
+        if ( is_admin() ) return;
+
+        $enabled = get_option( $this->prefix . 'enable_chat_widget', 'yes' );
+        if ( $enabled !== 'yes' ) return;
+
+        $hide_checkout = get_option( $this->prefix . 'chat_widget_hide_checkout', 'yes' );
+        if ( $hide_checkout === 'yes' ) {
+            if ( function_exists( 'is_checkout' ) && is_checkout() ) return;
+            if ( function_exists( 'is_cart' ) && is_cart() ) return;
+        }
+
+        $phone = get_option( $this->prefix . 'chat_widget_phone', '' );
+        if ( empty( $phone ) ) {
+            $phone = get_option( $this->prefix . 'device', '' );
+        }
+        $clean_phone = preg_replace( '/[^0-9]/', '', $phone );
+        if ( empty( $clean_phone ) ) return;
+
+        $title       = get_option( $this->prefix . 'chat_widget_title', 'خدمة عملاء المتجر' );
+        $status_txt  = get_option( $this->prefix . 'chat_widget_status', 'متواجدون للرد على استفساراتكم ⚡' );
+        $greeting    = get_option( $this->prefix . 'chat_widget_greeting', 'مرحباً بك! 👋 كيف يمكننا مساعدتك اليوم؟' );
+        $position    = get_option( $this->prefix . 'chat_widget_position', 'right' );
+        $delay       = intval( get_option( $this->prefix . 'chat_widget_delay', '3' ) );
+        $prefilled   = get_option( $this->prefix . 'chat_widget_prefilled', 'مرحباً، لدي استفسار بخصوص {{page_title}}' );
+
+        // Dynamic page tags
+        $page_title = wp_title( '', false );
+        if ( empty( trim( $page_title ) ) ) {
+            $page_title = get_bloginfo( 'name' );
+        }
+        $page_url = home_url( add_query_arg( [], $GLOBALS['wp']->request ?? '' ) );
+        if ( empty( $page_url ) ) {
+            $page_url = home_url();
+        }
+        $product_price = '';
+
+        if ( function_exists( 'is_product' ) && is_product() ) {
+            global $product;
+            if ( is_a( $product, 'WC_Product' ) ) {
+                $page_title = $product->get_name();
+                $price_val = $product->get_price();
+                if ( $price_val !== '' ) {
+                    $product_price = html_entity_decode( strip_tags( wc_price( $price_val ) ) );
+                }
+                $page_url = get_permalink( $product->get_id() );
+            }
+        }
+
+        $msg = str_replace(
+            [ '{{page_title}}', '{{page_url}}', '{{product_price}}', '{{shop_name}}' ],
+            [ trim( $page_title ), $page_url, $product_price, get_bloginfo( 'name' ) ],
+            $prefilled
+        );
+
+        $default_msg_encoded = rawurlencode( $msg );
+        $direct_wa_url = 'https://wa.me/' . $clean_phone . '?text=' . $default_msg_encoded;
+        $pos_class = ( $position === 'left' ) ? 'mpwa-pos-left' : 'mpwa-pos-right';
+        ?>
+        <div id="mpwa-chat-widget" class="mpwa-chat-widget <?php echo esc_attr( $pos_class ); ?>" data-delay="<?php echo esc_attr( $delay ); ?>" data-phone="<?php echo esc_attr( $clean_phone ); ?>" data-default-msg="<?php echo esc_attr( $msg ); ?>">
+            <!-- Floating Trigger Button -->
+            <button type="button" id="mpwa-chat-trigger" class="mpwa-chat-trigger" aria-label="تواصل معنا عبر واتساب">
+                <span class="mpwa-chat-pulse"></span>
+                <span class="mpwa-chat-icon-open">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                        <path d="M12.01 2.01A10 10 0 002.01 12c0 1.76.45 3.44 1.3 4.95L2.01 22l5.22-1.37a9.97 9.97 0 004.78 1.21h.01a10 10 0 0010-10 10 10 0 00-10-9.83zM12.01 20.14h-.01a8.31 8.31 0 01-4.23-1.15l-.3-.18-3.15.83.84-3.07-.2-.32A8.34 8.34 0 013.68 12a8.34 8.34 0 018.33-8.33 8.34 8.34 0 01-8.33 8.14zM16.58 13.9c-.25-.12-1.48-.73-1.7-.81-.23-.08-.4-.12-.57.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-1.1-.49-2.07-1.1-2.92-2.14-.23-.28-.02-.27.22-.52.05-.05.11-.12.16-.18.06-.06.08-.12.12-.18.04-.08.02-.15-.01-.21-.03-.06-.25-.6-.35-.82-.09-.21-.18-.18-.25-.18h-.21c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.12.16 1.78 2.71 4.3 3.8.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28z"/>
+                    </svg>
+                </span>
+                <span class="mpwa-chat-icon-close">✕</span>
+                <span class="mpwa-chat-badge">1</span>
+            </button>
+
+            <!-- Auto Greeting Tooltip Bubble -->
+            <?php if ( ! empty( $greeting ) ): ?>
+            <div id="mpwa-chat-tooltip" class="mpwa-chat-tooltip">
+                <button type="button" class="mpwa-chat-tooltip-close" aria-label="إغلاق التنبيه">✕</button>
+                <div class="mpwa-chat-tooltip-content">
+                    <span class="mpwa-chat-tooltip-dot"></span>
+                    <p><?php echo esc_html( $greeting ); ?></p>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Interactive Popup Chat Box -->
+            <div id="mpwa-chat-box" class="mpwa-chat-box">
+                <!-- Header -->
+                <div class="mpwa-chat-box-header">
+                    <div class="mpwa-chat-box-avatar-wrap">
+                        <div class="mpwa-chat-box-avatar">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
+                                <path d="M12.01 2.01A10 10 0 002.01 12c0 1.76.45 3.44 1.3 4.95L2.01 22l5.22-1.37a9.97 9.97 0 004.78 1.21h.01a10 10 0 0010-10 10 10 0 00-10-9.83zM12.01 20.14h-.01a8.31 8.31 0 01-4.23-1.15l-.3-.18-3.15.83.84-3.07-.2-.32A8.34 8.34 0 013.68 12a8.34 8.34 0 018.33-8.33 8.34 8.34 0 01-8.33 8.14zM16.58 13.9c-.25-.12-1.48-.73-1.7-.81-.23-.08-.4-.12-.57.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-1.1-.49-2.07-1.1-2.92-2.14-.23-.28-.02-.27.22-.52.05-.05.11-.12.16-.18.06-.06.08-.12.12-.18.04-.08.02-.15-.01-.21-.03-.06-.25-.6-.35-.82-.09-.21-.18-.18-.25-.18h-.21c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.12.16 1.78 2.71 4.3 3.8.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28z"/>
+                            </svg>
+                        </div>
+                        <span class="mpwa-chat-box-online-dot"></span>
+                    </div>
+                    <div class="mpwa-chat-box-title-info">
+                        <h4><?php echo esc_html( $title ); ?></h4>
+                        <p><?php echo esc_html( $status_txt ); ?></p>
+                    </div>
+                    <button type="button" id="mpwa-chat-box-close" class="mpwa-chat-box-close" aria-label="إغلاق">✕</button>
+                </div>
+
+                <!-- Body (WhatsApp Conversation Mock) -->
+                <div class="mpwa-chat-box-body">
+                    <div class="mpwa-chat-msg-bubble">
+                        <p><?php echo nl2br( esc_html( $greeting ) ); ?></p>
+                        <span class="mpwa-chat-msg-time"><?php echo date_i18n( 'h:i A' ); ?></span>
+                    </div>
+                </div>
+
+                <!-- Footer (Input & Direct WhatsApp Action) -->
+                <div class="mpwa-chat-box-footer">
+                    <div class="mpwa-chat-input-row">
+                        <input type="text" id="mpwa-chat-user-input" value="<?php echo esc_attr( $msg ); ?>" placeholder="اكتب رسالتك هنا..." dir="auto">
+                        <button type="button" id="mpwa-chat-send-btn" class="mpwa-chat-send-btn" title="إرسال عبر واتساب">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <a href="<?php echo esc_url( $direct_wa_url ); ?>" target="_blank" rel="noopener noreferrer" class="mpwa-chat-direct-link">
+                        <span>💬 بدء المحادثة المباشرة عبر واتساب</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php
     }
 
     /* ── Pages ─────────────────────────────────────────── */

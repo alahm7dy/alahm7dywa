@@ -1011,3 +1011,488 @@
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   Floating WhatsApp Chat Widget Styles (Glassmorphism & Micro-animations)
+   ========================================================================== */
+.mpwa-chat-widget {
+    position: fixed;
+    bottom: 24px;
+    z-index: 999999;
+    font-family: var(--mpwa-font);
+    direction: rtl;
+    text-align: right;
+    box-sizing: border-box;
+}
+
+.mpwa-chat-widget *,
+.mpwa-chat-widget *::before,
+.mpwa-chat-widget *::after {
+    box-sizing: border-box;
+}
+
+.mpwa-chat-widget.mpwa-pos-right {
+    right: 24px;
+}
+
+.mpwa-chat-widget.mpwa-pos-left {
+    left: 24px;
+    direction: ltr;
+}
+
+.mpwa-chat-widget.mpwa-pos-left .mpwa-chat-box {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ── Trigger Button ──────────────────────────────────────── */
+.mpwa-chat-trigger {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45), 0 3px 8px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    outline: none;
+    padding: 0;
+    z-index: 2;
+}
+
+.mpwa-chat-trigger:hover {
+    transform: scale(1.08) translateY(-3px);
+    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.55), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.mpwa-chat-trigger:active {
+    transform: scale(0.96);
+}
+
+/* Radar Pulse Animation */
+.mpwa-chat-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #25D366;
+    animation: mpwaPulseWave 2.2s infinite ease-out;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes mpwaPulseWave {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Trigger Icons */
+.mpwa-chat-icon-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.mpwa-chat-icon-close {
+    display: none;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.mpwa-chat-widget.mpwa-open .mpwa-chat-icon-open {
+    display: none;
+}
+
+.mpwa-chat-widget.mpwa-open .mpwa-chat-icon-close {
+    display: block;
+    transform: rotate(90deg);
+}
+
+.mpwa-chat-widget.mpwa-open .mpwa-chat-pulse {
+    display: none;
+}
+
+/* Badge Indicator */
+.mpwa-chat-badge {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: mpwaBadgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes mpwaBadgePop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+.mpwa-chat-widget.mpwa-opened .mpwa-chat-badge {
+    display: none;
+}
+
+/* ── Tooltip Bubble ──────────────────────────────────────── */
+.mpwa-chat-tooltip {
+    position: absolute;
+    bottom: 74px;
+    background: #ffffff;
+    padding: 12px 16px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    min-width: 220px;
+    max-width: 280px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mpwa-pos-right .mpwa-chat-tooltip {
+    right: 0;
+}
+
+.mpwa-pos-left .mpwa-chat-tooltip {
+    left: 0;
+}
+
+.mpwa-chat-tooltip.mpwa-tooltip-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.mpwa-chat-widget.mpwa-open .mpwa-chat-tooltip {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.mpwa-chat-tooltip-close {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.mpwa-chat-tooltip-close:hover {
+    color: #ef4444;
+}
+
+.mpwa-chat-tooltip-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding-left: 10px;
+}
+
+.mpwa-chat-tooltip-dot {
+    width: 9px;
+    height: 9px;
+    background: #25D366;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.2);
+}
+
+.mpwa-chat-tooltip p {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.5;
+}
+
+/* ── Popup Chat Box ──────────────────────────────────────── */
+.mpwa-chat-box {
+    position: absolute;
+    bottom: 80px;
+    width: 360px;
+    max-width: calc(100vw - 36px);
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.16), 0 3px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.92);
+    transform-origin: bottom right;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.mpwa-pos-left .mpwa-chat-box {
+    left: 0;
+    transform-origin: bottom left;
+}
+
+.mpwa-pos-right .mpwa-chat-box {
+    right: 0;
+    transform-origin: bottom right;
+}
+
+.mpwa-chat-widget.mpwa-open .mpwa-chat-box {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* Chat Box Header */
+.mpwa-chat-box-header {
+    background: linear-gradient(135deg, #075E54 0%, #128C7E 100%);
+    color: #ffffff;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.mpwa-chat-box-avatar-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.mpwa-chat-box-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.mpwa-chat-box-online-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: #25D366;
+    border-radius: 50%;
+    border: 2px solid #075E54;
+}
+
+.mpwa-chat-box-title-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.mpwa-chat-box-title-info h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mpwa-chat-box-title-info p {
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    color: #a7f3d0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mpwa-chat-box-close {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #ffffff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    outline: none;
+}
+
+.mpwa-chat-box-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Chat Box Body */
+.mpwa-chat-box-body {
+    background: #efeae2 url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png') repeat;
+    background-size: 320px;
+    padding: 20px 16px;
+    min-height: 130px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.mpwa-chat-msg-bubble {
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 12px 12px 0 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    position: relative;
+    max-width: 90%;
+    margin-right: auto;
+}
+
+.mpwa-chat-msg-bubble p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+.mpwa-chat-msg-time {
+    display: block;
+    font-size: 10px;
+    color: #94a3b8;
+    text-align: left;
+    margin-top: 4px;
+}
+
+/* Chat Box Footer */
+.mpwa-chat-box-footer {
+    background: #ffffff;
+    padding: 14px 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.mpwa-chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 4px 6px 4px 12px;
+    transition: border-color 0.2s;
+}
+
+.mpwa-chat-input-row:focus-within {
+    border-color: #25D366;
+    background: #ffffff;
+}
+
+.mpwa-chat-input-row input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    font-family: var(--mpwa-font);
+    font-size: 13px;
+    color: #1e293b;
+    outline: none;
+}
+
+.mpwa-chat-send-btn {
+    background: #25D366;
+    color: #ffffff;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.mpwa-chat-send-btn:hover {
+    background: #128C7E;
+    transform: scale(1.05);
+}
+
+.mpwa-chat-send-btn svg {
+    transform: rotate(180deg);
+}
+
+.mpwa-chat-direct-link {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.mpwa-chat-direct-link:hover {
+    background: #25D366;
+    color: #ffffff;
+    border-color: #25D366;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+    .mpwa-chat-widget.mpwa-pos-right {
+        right: 16px;
+        bottom: 18px;
+    }
+    .mpwa-chat-widget.mpwa-pos-left {
+        left: 16px;
+        bottom: 18px;
+    }
+    .mpwa-chat-trigger {
+        width: 56px;
+        height: 56px;
+    }
+    .mpwa-chat-box {
+        bottom: 74px;
+        width: calc(100vw - 32px);
+    }
+}
