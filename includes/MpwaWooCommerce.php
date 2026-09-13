@@ -314,12 +314,12 @@ class MpwaWooCommerce {
 
     /* ── Shortcodes ────────────────────────────────────── */
     public function shortcode_newsletter( $atts ) {
-        $default_style       = get_option( $this->prefix . 'newsletter_default_style', 'card' );
-        $default_title       = get_option( $this->prefix . 'newsletter_title', 'انضم إلى مجتمعنا على واتساب! 💬' );
-        $default_desc        = get_option( $this->prefix . 'newsletter_desc', 'كن أول من يعلم بأحدث العروض والكوبونات والتخفيضات الحصرية مباشرة عبر واتساب.' );
-        $default_btn_text    = get_option( $this->prefix . 'newsletter_btn_text', 'اشترك الآن ⚡' );
-        $default_placeholder = get_option( $this->prefix . 'newsletter_placeholder', 'أدخل رقم الواتساب (مثال: 05xxxxxxxx)' );
-        $default_badge       = get_option( $this->prefix . 'newsletter_badge', 'عروض حصرية 🔥' );
+        $default_style       = get_option( $this->prefix . 'newsletter_default_style', 'simple' );
+        $default_title       = get_option( $this->prefix . 'newsletter_title', '' );
+        $default_desc        = get_option( $this->prefix . 'newsletter_desc', '' );
+        $default_btn_text    = get_option( $this->prefix . 'newsletter_btn_text', 'اشترك الآن' );
+        $default_placeholder = get_option( $this->prefix . 'newsletter_placeholder', 'رقم الواتساب (مثال: 05xxxxxxxx)' );
+        $default_badge       = get_option( $this->prefix . 'newsletter_badge', '' );
 
         $atts = shortcode_atts( [
             'style'       => $default_style,
@@ -331,8 +331,8 @@ class MpwaWooCommerce {
         ], $atts, 'mpwa_newsletter' );
 
         $style = sanitize_key( $atts['style'] );
-        if ( ! in_array( $style, [ 'card', 'inline', 'bar', 'dark', 'floating', 'sticky', 'minimal', 'gradient' ], true ) ) {
-            $style = 'card';
+        if ( ! in_array( $style, [ 'simple', 'card', 'inline', 'bar', 'dark', 'floating', 'sticky', 'minimal', 'gradient' ], true ) ) {
+            $style = 'simple';
         }
         if ( $style === 'bar' ) $style = 'inline';
         if ( $style === 'sticky' ) $style = 'floating';
@@ -343,7 +343,24 @@ class MpwaWooCommerce {
 
         ob_start();
         ?>
-        <?php if ( $style === 'card' ) : ?>
+        <?php if ( $style === 'simple' ) : ?>
+            <!-- ── Style: Simple Box & Button (مربع بسيط بجواره زر بدون أي أعلام) ── -->
+            <div class="mpwa-newsletter-wrapper mpwa-nl-simple" id="<?php echo esc_attr( $unique_id ); ?>">
+                <?php if ( ! empty( $atts['title'] ) ) : ?>
+                    <div class="mpwa-nl-simple-title"><?php echo esc_html( $atts['title'] ); ?></div>
+                <?php endif; ?>
+                <form class="mpwa-newsletter-form mpwa-nl-simple-form">
+                    <div class="mpwa-nl-simple-row">
+                        <input type="tel" name="mpwa_phone" placeholder="<?php echo esc_attr( $atts['placeholder'] ); ?>" required autocomplete="tel" dir="ltr">
+                        <button type="submit" class="mpwa-newsletter-btn">
+                            <span><?php echo esc_html( $atts['button'] ); ?></span>
+                        </button>
+                    </div>
+                    <div class="mpwa-newsletter-msg" style="display:none;"></div>
+                </form>
+            </div>
+
+        <?php elseif ( $style === 'card' ) : ?>
             <!-- ── Style 1: Modern Card (الافتراضي) ── -->
             <div class="mpwa-newsletter-wrapper mpwa-nl-style-card" id="<?php echo esc_attr( $unique_id ); ?>">
                 <div class="mpwa-nl-card-box">

@@ -390,9 +390,10 @@ $tags = ['{{shop_name}}','{{order_id}}','{{order_amount}}','{{order_status}}','{
               <div class="mpwa-grid-2">
                 <div class="mpwa-field">
                   <label>الستايل الافتراضي للشورت كود [mpwa_newsletter]</label>
-                  <?php $cur_style = get_option( $p . 'newsletter_default_style', 'card' ); ?>
+                  <?php $cur_style = get_option( $p . 'newsletter_default_style', 'simple' ); ?>
                   <select name="<?php echo esc_attr( $p ); ?>newsletter_default_style">
-                    <option value="card" <?php selected( $cur_style, 'card' ); ?>>🌟 بطاقة عصرية فاخرة (Modern Card - الافتراضي)</option>
+                    <option value="simple" <?php selected( $cur_style, 'simple' ); ?>>⚡ بسيط وعادي (مربع إدخال وبجواره زر - الافتراضي)</option>
+                    <option value="card" <?php selected( $cur_style, 'card' ); ?>>🌟 بطاقة عصرية فاخرة (Modern Card)</option>
                     <option value="inline" <?php selected( $cur_style, 'inline' ); ?>>📏 شريط أفقي مدمج (Minimal Inline Banner للفوتر والأشرطة)</option>
                     <option value="dark" <?php selected( $cur_style, 'dark' ); ?>>🌙 الوضع الداكن الفاخر (VIP Dark Glassmorphism)</option>
                     <option value="floating" <?php selected( $cur_style, 'floating' ); ?>>📌 شريط عائم أسفل المتجر (Sticky Floating Bar مع زر إغلاق)</option>

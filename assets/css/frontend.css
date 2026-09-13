@@ -305,7 +305,83 @@
 }
 
 /* ──────────────────────────────────────────────────────────
-   1. Style 1: Modern Card (البطاقة الحديثة الفاخرة - الافتراضي)
+   0. Style: Simple (مربع بسيط بجواره زر بدون أي أعلام)
+   ────────────────────────────────────────────────────────── */
+.mpwa-nl-simple {
+    width: 100%;
+    max-width: 480px;
+    margin: 16px auto;
+}
+
+.mpwa-nl-simple-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.mpwa-nl-simple-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.mpwa-nl-simple-row input[type="tel"] {
+    flex: 1;
+    height: 48px;
+    padding: 10px 16px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
+    font-family: var(--mpwa-font, 'Cairo', sans-serif);
+    font-size: 15px;
+    background: #ffffff;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.2s ease;
+    direction: ltr;
+    text-align: left;
+}
+
+.mpwa-nl-simple-row input[type="tel"]:focus {
+    border-color: #25D366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.18);
+    background: #ffffff;
+}
+
+.mpwa-nl-simple-row .mpwa-newsletter-btn {
+    height: 48px;
+    padding: 0 24px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--mpwa-font, 'Cairo', sans-serif);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+}
+
+.mpwa-nl-simple-row .mpwa-newsletter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+
+.mpwa-nl-simple-row .mpwa-newsletter-btn:disabled {
+    background: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ──────────────────────────────────────────────────────────
+   1. Style 1: Modern Card (البطاقة الحديثة الفاخرة)
    ────────────────────────────────────────────────────────── */
 .mpwa-nl-style-card {
     max-width: 540px;
@@ -925,6 +1001,13 @@
         flex-direction: column;
     }
     .mpwa-nl-style-minimal .mpwa-newsletter-btn {
+        width: 100%;
+    }
+    .mpwa-nl-simple-row {
+        flex-direction: column;
+    }
+    .mpwa-nl-simple-row input[type="tel"],
+    .mpwa-nl-simple-row .mpwa-newsletter-btn {
         width: 100%;
     }
 }
